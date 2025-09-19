@@ -50,7 +50,13 @@
   .btn-danger{background:var(--danger);color:#fff;border:none;border-radius:10px;padding:12px 16px;font-weight:700;cursor:pointer}
 
   /* ====== PÁGINA WHATSAPP CLONE ====== */
-  .wa-wrap{height:100vh;display:grid;grid-template-rows:auto 1fr}
+  /* 🔧 FIX MOBILE: troquei grid por flex (coluna) e usei 100dvh */
+  .wa-wrap{
+    min-height:100dvh; /* mobile moderno */
+    height:100vh;      /* fallback */
+    display:flex;
+    flex-direction:column;
+  }
   .wa-top{background:#fff;border-bottom:1px solid #eee;display:flex;align-items:center;gap:16px;padding:8px 14px}
   .wa-top .avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #e9eef0;background:#ddd}
   .wa-top .actions{margin-left:auto;display:flex;align-items:center;gap:14px;color:#96a0a6}
@@ -60,13 +66,16 @@
   .nav-tabs .tab.active{color:#1c8f68}
   .nav-tabs svg{width:22px;height:22px;opacity:.85}
   .segmented{display:flex;gap:10px;padding:12px 16px;background:#fff;border-bottom:1px solid #eee}
+
   .segmented .seg{padding:10px 16px;border-radius:10px;background:#eaeff0;color:#8a9499;font-weight:800}
   .segmented .seg.active{background:var(--primary);color:#fff}
 
-  .wa-main{display:grid;grid-template-columns:380px 1fr;min-height:0}
+  /* o main agora cresce para ocupar o resto da tela */
+  .wa-main{flex:1;display:grid;grid-template-columns:380px 1fr;min-height:0}
   .left-col{border-right:1px solid #e9edef;background:#fff;display:flex;flex-direction:column;min-height:0}
   .chatlist{overflow:auto}
   .chat-item{display:flex;gap:12px;padding:14px 16px;border-bottom:1px solid #f1f2f3;align-items:flex-start}
+  /* ✅ FIX do filtro (parêntese a mais quebrava CSS depois desse ponto) */
   .chat-item .pic{width:48px;height:48px;border-radius:50%;object-fit:cover;filter:blur(2px) saturate(.9) brightness(.92)}
   .chat-item .meta{flex:1}
   .chat-item .title{font-weight:800;margin-bottom:4px}
@@ -87,7 +96,7 @@
   .toast{position:fixed;left:50%;transform:translateX(-50%);top:70px;background:#2d2f31;color:#fff;border-radius:6px;padding:10px 14px;display:none;align-items:center;gap:12px;z-index:9}
   .toast.show{display:flex}
 
-  /* ====== MOBILE (aplicar layout do seu print 1) ====== */
+  /* ====== MOBILE (lista no topo e conversa oculta) ====== */
   @media (max-width:768px){
     .wa-main{grid-template-columns:1fr}      /* só a coluna esquerda */
     .right-col{display:none}                 /* oculta as mensagens no mobile */
@@ -96,7 +105,6 @@
     .wa-top .actions{gap:12px}
   }
 
-  /* reuso */
   .muted{color:#95a1a8}
   .row{display:flex;align-items:center;gap:10px}
   .success{color:var(--success)}
@@ -193,10 +201,7 @@
     <div class="wa-top">
       <img id="chatTopAvatar" class="avatar" src="https://i.postimg.cc/gcNd6QBM/img1.jpg" alt="avatar topo">
       <div class="pill" id="upgradePill">Liberar acesso completo<br>por R$ 27,90</div>
-      <div class="actions">
-        <!-- só ilustrativo -->
-        <span>🔔</span><span>⋯</span>
-      </div>
+      <div class="actions"><span>🔔</span><span>⋯</span></div>
     </div>
 
     <!-- abas -->
@@ -216,69 +221,61 @@
       <!-- coluna esquerda -->
       <aside class="left-col">
         <div class="chatlist" id="chatList">
-          <!-- Exemplo de item — use suas imagens; blur aplicado pela classe .pic -->
           <div class="chat-item">
             <img class="pic" src="https://i.postimg.cc/tC0qcD6S/blur1.jpg" alt="">
             <div class="meta">
-              <div class="title">Bloqueado ǀɣ””</div>
+              <div class="title">Bloqueado</div>
               <div class="sub">✔ Finalize a ordem de serviço</div>
             </div>
-            <div class="right">
-              <div class="chip">3</div>
-            </div>
+            <div class="right"><div class="chip">3</div></div>
           </div>
-
-          <!-- Repita com outras imagens (troque os src abaixo se quiser) -->
           <div class="chat-item">
             <img class="pic" src="https://i.postimg.cc/7LPVkpVb/blur2.jpg" alt="">
             <div class="meta">
-              <div class="title">Bloqueado ǀɣ””</div>
+              <div class="title">Bloqueado</div>
               <div class="sub">⚠ Conteúdo com teor sexual oculto…</div>
             </div>
-            <div class="right">
-              <div class="chip">2</div>
-            </div>
+            <div class="right"><div class="chip">2</div></div>
           </div>
-
           <div class="chat-item">
             <img class="pic" src="https://i.postimg.cc/WbhjWbTQ/blur3.jpg" alt="">
             <div class="meta">
-              <div class="title">Bloqueado ǀɣ””</div>
+              <div class="title">Bloqueado</div>
               <div class="sub">✔ Finalize a ordem de serviço</div>
             </div>
             <div class="right"><div class="chip">5</div></div>
           </div>
-
           <div class="chat-item">
             <img class="pic" src="https://i.postimg.cc/6qdGQJ5b/blur4.jpg" alt="">
             <div class="meta">
-              <div class="title">Bloqueado ǀɣ””</div>
+              <div class="title">Bloqueado</div>
               <div class="sub">✔ Finalize a ordem de serviço</div>
             </div>
+            <div class="right"></div>
           </div>
-
           <div class="chat-item">
             <img class="pic" src="https://i.postimg.cc/vHpg8J7D/blur5.jpg" alt="">
             <div class="meta">
-              <div class="title">Bloqueado ǀɣ””</div>
+              <div class="title">Bloqueado</div>
               <div class="sub">✔ Finalize a ordem de serviço</div>
             </div>
+            <div class="right"></div>
           </div>
-
           <div class="chat-item">
             <img class="pic" src="https://i.postimg.cc/GmFQwcw7/blur6.jpg" alt="">
             <div class="meta">
-              <div class="title">Bloqueado ǀɣ””</div>
+              <div class="title">Bloqueado</div>
               <div class="sub">✔ Finalize a ordem de serviço</div>
             </div>
+            <div class="right"></div>
           </div>
-
           <div class="chat-item">
             <img class="pic" src="https://i.postimg.cc/3RrFq0D5/blur7.jpg" alt="">
             <div class="meta">
-              <div class="title">Bloqueado ǀɣ””</div>
+              <div class="title">Bloqueado</div>
               <div class="sub">✔ Finalize a ordem de serviço</div>
             </div>
+            <div class="right"></div>
           </div>
         </div>
       </aside>
@@ -286,10 +283,10 @@
       <!-- coluna direita (oculta no mobile para ficar igual seu print 1) -->
       <section class="right-col">
         <div class="msgs" id="msgs">
-          <div class="bubble left">Conteúdo Bloqueado ðŸ””.</div>
-          <div class="bubble right">Conteúdo Bloqueado ðŸ””. ✔✔</div>
-          <div class="bubble left">Conteúdo Bloqueado ðŸ””.</div>
-          <div class="bubble right">Conteúdo Bloqueado ðŸ””. ✔✔</div>
+          <div class="bubble left">Conteúdo Bloqueado.</div>
+          <div class="bubble right">Conteúdo Bloqueado. ✔✔</div>
+          <div class="bubble left">Conteúdo Bloqueado.</div>
+          <div class="bubble right">Conteúdo Bloqueado. ✔✔</div>
         </div>
 
         <div class="composer">
@@ -368,6 +365,8 @@ const btnNo  = document.getElementById('btnNo');
 /* ============ ELEMENTOS CHAT ============ */
 const chatTopAvatar = document.getElementById('chatTopAvatar');
 const toast = document.getElementById('toast');
+const chatListEl = document.getElementById('chatList');
+const msgsEl = document.getElementById('msgs');
 
 /* ===== prova dinâmica (só estética) ===== */
 const dddToState = {'11':'São Paulo','12':'São Paulo','13':'São Paulo','14':'São Paulo','15':'São Paulo','16':'São Paulo','17':'São Paulo','18':'São Paulo','19':'São Paulo','21':'Rio de Janeiro','22':'Rio de Janeiro','24':'Rio de Janeiro','27':'Espírito Santo','28':'Espírito Santo','31':'Minas Gerais','32':'Minas Gerais','33':'Minas Gerais','34':'Minas Gerais','35':'Minas Gerais','37':'Minas Gerais','38':'Minas Gerais','41':'Paraná','42':'Paraná','43':'Paraná','44':'Paraná','45':'Paraná','46':'Paraná','47':'Santa Catarina','48':'Santa Catarina','49':'Santa Catarina','51':'Rio Grande do Sul','53':'Rio Grande do Sul','54':'Rio Grande do Sul','55':'Rio Grande do Sul','61':'Distrito Federal','62':'Goiás','63':'Tocantins','64':'Goiás','65':'Mato Grosso','66':'Mato Grosso','67':'Mato Grosso do Sul','68':'Acre','69':'Rondônia','71':'Bahia','73':'Bahia','74':'Bahia','75':'Bahia','77':'Bahia','79':'Sergipe','81':'Pernambuco','82':'Alagoas','83':'Paraíba','84':'Rio Grande do Norte','85':'Ceará','86':'Piauí','87':'Pernambuco','88':'Ceará','89':'Piauí','91':'Pará','92':'Amazonas','93':'Pará','94':'Pará','95':'Roraima','96':'Amapá','97':'Amazonas','98':'Maranhão','99':'Maranhão'};
@@ -399,8 +398,6 @@ function showPage(hash){
   const target = (hash === '#chat') ? 'chat' : 'flow';
   document.getElementById('page-flow').classList.toggle('active', target==='flow');
   document.getElementById('page-chat').classList.toggle('active', target==='chat');
-
-  // quando abrir o chat, seta avatar do topo com a foto salva (se existir)
   if(target==='chat'){
     const fotoperfil = localStorage.getItem('fotoperfil');
     chatTopAvatar.src = fotoperfil || 'https://i.postimg.cc/gcNd6QBM/img1.jpg';
@@ -410,17 +407,11 @@ window.addEventListener('hashchange', ()=>showPage(location.hash));
 showPage(location.hash);
 
 /* ===== botão “Acessar Relatório” ===== */
-/* COLE SEU LINK AQUI (se quiser redirecionar para outra página externa):
-   Ex.: const REPORT_URL = "https://seu-dominio.com/whatsapp-clone.html";
-   Se deixar vazio (""), ele abre a PÁGINA #chat deste mesmo arquivo.
-*/
-const REPORT_URL = ""; // <<< COLE AQUI SEU LINK >>>
-
+const REPORT_URL = ""; // opcional
 accessReportBtn.addEventListener('click', ()=>{
   if(REPORT_URL && REPORT_URL.trim()){
     window.open(REPORT_URL, '_blank');
   }else{
-    // abre a própria página de chat deste arquivo
     location.hash = 'chat';
   }
 });
@@ -430,8 +421,6 @@ cloneButton.addEventListener('click', ()=>{
   const phone = phoneInput.value.trim();
   if(!phone) return;
   localStorage.setItem('numeroClonado', phone);
-
-  // mostra loading
   stepCollect.style.display = 'none';
   stepLoading.style.display = 'block';
   stepLoading.setAttribute('aria-hidden','false');
@@ -469,7 +458,6 @@ function setProgress(p){
 }
 
 function startLoadingFlow(){
-  // reset
   logContainer.innerHTML = '';
   profileCard.classList.remove('visible');
   imgProfile.src = 'https://i.postimg.cc/gcNd6QBM/img1.jpg';
@@ -478,7 +466,6 @@ function startLoadingFlow(){
   confirmBar.style.display = 'none';
   setProgress(2);
 
-  // logs + cidade
   logMessages.forEach(msg=>{
     setTimeout(async ()=>{
       if(msg.isLocation){
@@ -497,7 +484,6 @@ function startLoadingFlow(){
     }, msg.delay);
   });
 
-  // progresso
   let progress = 2;
   const int = setInterval(()=>{
     progress = Math.min(100, progress + Math.ceil(Math.random()*3));
@@ -513,13 +499,12 @@ function startLoadingFlow(){
   }, 250);
 }
 
-/* ===== buscar perfil ===== */
+/* ===== buscar perfil / diagnóstico ===== */
 async function fetchProfileOnce(candidate){
   const url = "https://w.imagens.pics/webhook/182dd";
   const key = "wuAsuKHImXennBSFjt895tu984ut5";
   let foto = null, statusTxt = '', errorDetail = null;
 
-  // POST
   try{
     addLogLine(`Consultando perfil (${candidate}) via POST...`);
     const resp = await fetchWithTimeout(url, {
@@ -536,7 +521,6 @@ async function fetchProfileOnce(candidate){
     }else errorDetail = `POST ${resp.status}`;
   }catch(e){ errorDetail = 'POST falhou'; }
 
-  // GET
   try{
     addLogLine(`Tentando via GET (fallback) para ${candidate}...`);
     const u = `${url}?number=${encodeURIComponent(candidate)}&key=${encodeURIComponent(key)}`;
@@ -588,7 +572,6 @@ async function diagnosticarWebhook(numero){
 async function iniciarBuscaComConfirmacao(numeroApi){
   const { preferred, alt, hasAlt } = resolveCandidatesForInteractive(numeroApi);
 
-  // tentativa 1 (preferida)
   const res1 = await fetchProfileOnce(preferred);
 
   numeroPerfil.textContent = formatarNumeroBrasil(localStorage.getItem('numeroClonado')||'');
@@ -603,7 +586,6 @@ async function iniciarBuscaComConfirmacao(numeroApi){
     if(res1.errorDetail) addLogLine(`Detalhe: ${res1.errorDetail}`);
   }
 
-  // diagnóstico
   try{
     const diag = await diagnosticarWebhook(numeroApi);
     if(!diag.reached) addLogLine('Diagnóstico: webhook não respondeu.');
@@ -611,7 +593,6 @@ async function iniciarBuscaComConfirmacao(numeroApi){
     else addLogLine(`Diagnóstico: webhook respondeu ${diag.code}, mas sem sinais claros de sessão ativa.`);
   }catch(e){ addLogLine('Diagnóstico: erro inesperado.'); }
 
-  // confirmação (variação com/sem 9)
   if(hasAlt){
     const altLocalLen = alt.replace(/^55/,'').length;
     btnNo.textContent = (altLocalLen===10) ? 'Não, tentar sem 9' : 'Não, tentar com 9';
@@ -651,14 +632,55 @@ setInterval(()=>{
   setTimeout(()=>toast.classList.remove('show'), 2000);
 }, 6000);
 
-/* ===== iniciar com número salvo (conveniência) ===== */
+/* ======== CHAT VIVO: mensagens a cada 10s ======== */
+const MSG_TEMPLATES = [
+  "Oi, tá aí?","Me chama no privado 💬","Tô com saudade 💖",
+  "Manda áudio rapidinho 🎧","Cheguei em casa","A foto ficou 🔥",
+  "Te ligo?","Tá online?"
+];
+
+function simulateIncoming(){
+  if(location.hash !== '#chat') return;
+
+  // 1) Escolhe um chat da lista e incrementa badge
+  const items = Array.from(chatListEl.querySelectorAll('.chat-item'));
+  if(items.length){
+    const item = items[Math.floor(Math.random()*items.length)];
+    let chip = item.querySelector('.chip');
+    if(!chip){
+      chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.textContent = '1';
+      (item.querySelector('.right') || item.appendChild(Object.assign(document.createElement('div'),{className:'right'}))).appendChild(chip);
+    }else{
+      chip.textContent = String(parseInt(chip.textContent||'0',10)+1);
+    }
+    const sub = item.querySelector('.sub');
+    if(sub){
+      if(!sub.dataset.prev) sub.dataset.prev = sub.textContent;
+      sub.textContent = 'digitando...';
+      setTimeout(()=>{ sub.textContent = '✔ Nova mensagem'; }, 1600);
+    }
+  }
+
+  // 2) Em desktop, adiciona bolha na conversa
+  if(window.innerWidth > 768 && msgsEl){
+    const b = document.createElement('div');
+    b.className = Math.random()<0.5 ? 'bubble left' : 'bubble right';
+    b.textContent = MSG_TEMPLATES[Math.floor(Math.random()*MSG_TEMPLATES.length)];
+    msgsEl.appendChild(b);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+}
+setInterval(simulateIncoming, 10000);
+/* ================================================ */
+
 document.addEventListener('DOMContentLoaded', ()=>{
   const saved = localStorage.getItem('numeroClonado');
   if(saved){
     phoneInput.value = maskBrPhone(saved);
     cloneButton.removeAttribute('disabled');
   }
-  // ao entrar no chat direto por hash, carrega avatar do topo
   if(location.hash==='#chat'){
     const fp = localStorage.getItem('fotoperfil');
     chatTopAvatar.src = fp || chatTopAvatar.src;
