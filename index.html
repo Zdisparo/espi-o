@@ -8,8 +8,8 @@
 <style>
   :root{
     --primary:#25D366; --primary-dark:#128C7E; --bg:#f5f5f1; --white:#fff;
-    --muted:#7f8c8d; --text:#2c3e50; --danger:#ff3b30; --warn:#ffcc00;
-    --success:#34c759;
+    --muted:#7f8c8d; --text:#1f2a32; --danger:#ff3b30; --warn:#ffcc00;
+    --success:#34c759; --soft:#edf2f4; --line:#e6e8ea; --chip:#1aaa65;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Segoe UI',Tahoma,Arial,Verdana,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
@@ -31,7 +31,6 @@
   .proofs{display:flex;flex-direction:column;gap:10px;margin-top:18px}
   .proof{background:#dcf8c6;padding:10px;border-radius:10px;display:flex;gap:10px;align-items:center}
   .proof svg{width:18px;height:18px;fill:var(--primary)}
-
   .loading-wrap{display:none}
   .spinner{width:56px;height:56px;border-radius:50%;border:6px solid rgba(37,211,102,.2);border-top-color:var(--primary);animation:spin 1s linear infinite;margin:0 auto}
   @keyframes spin{to{transform:rotate(360deg)}}
@@ -40,7 +39,6 @@
   .log{background:#f6f7f8;border-radius:8px;padding:12px;height:180px;overflow:auto;font-family:monospace;margin-top:12px}
   .log-line{opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s;margin-bottom:8px}
   .log-line.visible{opacity:1;transform:none}
-
   .profile{display:none;margin-top:12px}
   .profile.visible{display:flex;flex-direction:column;gap:12px}
   .profile .head{display:flex;gap:12px;align-items:center}
@@ -49,60 +47,57 @@
   .confirm-bar{display:none;margin-top:12px;padding:10px;border:1px dashed #dde;border-radius:8px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
   .btn-danger{background:var(--danger);color:#fff;border:none;border-radius:10px;padding:12px 16px;font-weight:700;cursor:pointer}
 
-  /* ====== PÁGINA WHATSAPP CLONE ====== */
-  .wa-wrap{
-    min-height:100dvh;
-    height:100vh;
-    display:flex;
-    flex-direction:column;
-  }
-  .wa-top{background:#fff;border-bottom:1px solid #eee;display:flex;align-items:center;gap:16px;padding:8px 14px}
-  .wa-top .avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #e9eef0;background:#ddd}
-  .wa-top .actions{margin-left:auto;display:flex;align-items:center;gap:14px;color:#96a0a6}
-  .pill{background:var(--primary);color:#fff;border-radius:10px;padding:10px 14px;font-weight:800;line-height:1.15;box-shadow:0 2px 0 rgba(0,0,0,.08)}
-  .nav-tabs{display:flex;gap:28px;padding:12px 16px;background:#fff;border-bottom:1px solid #eee;align-items:center}
-  .nav-tabs .tab{display:flex;align-items:center;gap:10px;color:#87959d;font-weight:800;letter-spacing:.06em}
-  .nav-tabs .tab.active{color:#1c8f68}
-  .segmented{display:flex;gap:10px;padding:12px 16px;background:#fff;border-bottom:1px solid #eee}
-  .segmented .seg{padding:10px 16px;border-radius:10px;background:#eaeff0;color:#8a9499;font-weight:800}
-  .segmented .seg.active{background:var(--primary);color:#fff}
+  /* ====== PÁGINA WHATSAPP HOME (MOBILE) ====== */
+  .home-wrap{min-height:100dvh;display:flex;flex-direction:column}
+  /* topo estreito com avatar + pílula */
+  .util-top{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#fff;border-bottom:1px solid var(--line)}
+  .util-top .avatar{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid #eef3f4;background:#ddd}
+  .pill{margin-left:auto;background:#2fd070;color:#fff;border-radius:12px;padding:8px 12px;font-weight:800;line-height:1.1;box-shadow:0 2px 0 rgba(0,0,0,.08);cursor:pointer;animation:pulse 2s infinite}
+  @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
 
-  .wa-main{flex:1;display:grid;grid-template-columns:380px 1fr;min-height:0}
-  .left-col{border-right:1px solid #e9edef;background:#fff;display:flex;flex-direction:column;min-height:0}
-  .chatlist{overflow:auto}
-  .chat-item{display:flex;gap:12px;padding:14px 16px;border-bottom:1px solid #f1f2f3;align-items:flex-start}
-  .chat-item .pic{width:48px;height:48px;border-radius:50%;object-fit:cover;filter:blur(2px) saturate(.9) brightness(.92)}
-  .chat-item .meta{flex:1}
-  .chat-item .title{font-weight:800;margin-bottom:4px}
-  .chat-item .sub{font-size:.92rem;color:#7d8a90;display:flex;align-items:center;gap:8px}
-  .chat-item .right{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
-  .chip{min-width:26px;height:26px;background:#1aaa65;color:#fff;border-radius:999px;display:flex;align-items:center;justify-content:center;font-weight:800;padding:0 8px;font-size:.8rem}
+  /* appbar WhatsApp */
+  .appbar{background:#fff;padding:10px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center}
+  .appbar h2{font-size:1.4rem;letter-spacing:.2px}
+  .appbar .actions{margin-left:auto;display:flex;gap:14px;color:#7c8b93}
+  /* busca */
+  .searchbar{background:#fff;padding:10px 14px;border-bottom:1px solid var(--line)}
+  .search{background:#f1f3f4;border-radius:999px;padding:12px 14px;display:flex;gap:10px;align-items:center;color:#94a0a7}
+  .search input{border:none;background:transparent;outline:none;flex:1;color:#54606a}
+  .search .icon{font-size:1.1rem}
 
-  .right-col{background:#efeae2;display:flex;flex-direction:column;min-height:0}
-  .msgs{flex:1;overflow:auto;padding:18px}
-  .bubble{max-width:520px;padding:12px 14px;border-radius:12px;box-shadow:0 1px 0 rgba(0,0,0,.06);margin:12px 0}
-  .bubble.left{background:#fff;border-top-left-radius:0}
-  .bubble.right{background:#d9fdd3;margin-left:auto;border-top-right-radius:0}
-  .composer{background:#f6f7f8;border-top:1px solid #e1e4e5;padding:10px 14px;display:flex;gap:12px;align-items:center}
-  .composer input{flex:1;padding:12px 14px;border-radius:999px;border:1px solid #e0e0e0;background:#fff}
-  .tool{width:40px;height:40px;border-radius:999px;background:#fff;border:1px solid #e2e5e6;display:flex;align-items:center;justify-content:center}
+  /* lista de chats */
+  .list{background:#fff;flex:1;overflow:auto}
+  .row-chat{display:flex;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);align-items:center}
+  .pic{width:52px;height:52px;border-radius:50%;object-fit:cover;filter:blur(2px) saturate(.9) brightness(.92)}
+  .meta{flex:1;min-width:0}
+  .name{font-weight:800}
+  .preview{font-size:.95rem;color:#748089;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+  .righty{display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:52px}
+  .time{font-size:.85rem;color:#7e8a92}
+  .badge{background:#25d366;color:#fff;border-radius:999px;min-width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:800;padding:0 6px;font-size:.8rem}
+
+  /* navbar inferior */
+  .bottom-nav{background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0}
+  .bn-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#64717a;font-weight:600;font-size:.9rem}
+  .bn-item.active{color:#1f9c63}
+  .bn-badge{position:absolute;margin-left:28px;margin-top:-10px;background:#1f9c63;color:#fff;border-radius:999px;padding:2px 8px;font-weight:800;font-size:.8rem}
+
+  /* FAB */
+  .fab{position:fixed;right:16px;bottom:80px;background:#1f9c63;color:#fff;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 20px rgba(0,0,0,.12);font-size:1.6rem}
 
   /* toast */
   .toast{position:fixed;left:50%;transform:translateX(-50%);top:70px;background:#2d2f31;color:#fff;border-radius:6px;padding:10px 14px;display:none;align-items:center;gap:12px;z-index:9}
   .toast.show{display:flex}
 
-  /* ====== MOBILE ====== */
-  @media (max-width:768px){
-    .wa-main{grid-template-columns:1fr}
-    .right-col{display:none}
-    .nav-tabs{gap:22px}
-    .nav-tabs .tab{font-size:.95rem}
-    .wa-top .actions{gap:12px}
+  /* desktop: centraliza a “tela de celular” um pouquinho mais estreita */
+  @media (min-width:769px){
+    .home-wrap{max-width:520px;margin:0 auto;border-left:1px solid var(--line);border-right:1px solid var(--line)}
   }
 
   .muted{color:#95a1a8}
   .row{display:flex;align-items:center;gap:10px}
   .success{color:var(--success)}
+  @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -158,21 +153,15 @@
         </div>
 
         <div class="detail">
-          <div class="row" style="margin-bottom:8px">
-            <span class="muted">Cidade de última conexão</span>
-          </div>
+          <div class="row" style="margin-bottom:8px"><span class="muted">Cidade de última conexão</span></div>
           <div id="userCity" style="font-weight:700;margin-bottom:16px">Fortaleza</div>
-
-          <div class="row">
-            <span class="muted">Status do dispositivo</span>
-          </div>
+          <div class="row"><span class="muted">Status do dispositivo</span></div>
           <div style="font-weight:700">Ativo</div>
 
           <div style="margin-top:14px">
             <button class="btn" id="accessReportBtn">Acessar Relatório</button>
           </div>
 
-          <!-- CONFIRM BAR -->
           <div id="confirmBar" class="confirm-bar">
             <span id="confirmText" style="font-weight:600">É essa pessoa?</span>
             <div class="row">
@@ -187,123 +176,145 @@
 </section>
 
 <!-- =========================================
-=         PAGE: WHATSAPP CLONE (CHAT)       =
+=         PAGE: WHATSAPP HOME (MOBILE)      =
 ========================================== -->
 <section id="page-chat" class="page">
-  <div class="wa-wrap">
+  <div class="home-wrap">
 
-    <!-- barra do topo -->
-    <div class="wa-top">
+    <!-- topo com avatar + pílula 29,97 -->
+    <div class="util-top">
       <img id="chatTopAvatar" class="avatar" src="https://i.postimg.cc/gcNd6QBM/img1.jpg" alt="avatar topo">
-      <div class="pill" id="upgradePill">Liberar acesso completo<br>por R$ 27,90</div>
-      <div class="actions"><span>🔔</span><span>⋯</span></div>
+      <div id="upgradePill" class="pill">Liberar acesso completo<br>por R$ 29,97</div>
     </div>
 
-    <!-- abas -->
-    <div class="nav-tabs">
-      <div class="tab active" id="tabConversas">🗨️ <span>CONVERSAS</span></div>
-      <div class="tab" id="tabLigacoes">📞 <span>LIGAÇÕES</span></div>
-      <div class="tab" id="tabContatos">👤 <span>CONTATOS</span></div>
+    <!-- Appbar -->
+    <div class="appbar">
+      <h2>WhatsApp</h2>
+      <div class="actions"><span>📷</span><span>⚙️</span><span>⋮</span></div>
     </div>
 
-    <!-- filtro -->
-    <div class="segmented">
-      <div class="seg active">PESSOAL</div>
-      <div class="seg">GRUPOS</div>
+    <!-- Busca -->
+    <div class="searchbar">
+      <div class="search">
+        <span class="icon">🔎</span>
+        <input placeholder="Pergunte à Meta AI ou pesquise">
+      </div>
     </div>
 
-    <div class="wa-main">
-      <!-- coluna esquerda -->
-      <aside class="left-col">
-        <div class="chatlist" id="chatList">
-          <div class="chat-item">
-            <img class="pic" src="https://i.postimg.cc/tC0qcD6S/blur1.jpg" alt="">
-            <div class="meta">
-              <div class="title">Bloqueado</div>
-              <div class="sub">✔ Finalize a ordem de serviço</div>
-            </div>
-            <div class="right"><div class="chip">3</div></div>
-          </div>
-          <div class="chat-item">
-            <img class="pic" src="https://i.postimg.cc/7LPVkpVb/blur2.jpg" alt="">
-            <div class="meta">
-              <div class="title">Bloqueado</div>
-              <div class="sub">⚠ Conteúdo com teor sexual oculto…</div>
-            </div>
-            <div class="right"><div class="chip">2</div></div>
-          </div>
-          <div class="chat-item">
-            <img class="pic" src="https://i.postimg.cc/WbhjWbTQ/blur3.jpg" alt="">
-            <div class="meta">
-              <div class="title">Bloqueado</div>
-              <div class="sub">✔ Finalize a ordem de serviço</div>
-            </div>
-            <div class="right"><div class="chip">5</div></div>
-          </div>
-          <div class="chat-item">
-            <img class="pic" src="https://i.postimg.cc/6qdGQJ5b/blur4.jpg" alt="">
-            <div class="meta">
-              <div class="title">Bloqueado</div>
-              <div class="sub">✔ Finalize a ordem de serviço</div>
-            </div>
-            <div class="right"></div>
-          </div>
-          <div class="chat-item">
-            <img class="pic" src="https://i.postimg.cc/vHpg8J7D/blur5.jpg" alt="">
-            <div class="meta">
-              <div class="title">Bloqueado</div>
-              <div class="sub">✔ Finalize a ordem de serviço</div>
-            </div>
-            <div class="right"></div>
-          </div>
-          <div class="chat-item">
-            <img class="pic" src="https://i.postimg.cc/GmFQwcw7/blur6.jpg" alt="">
-            <div class="meta">
-              <div class="title">Bloqueado</div>
-              <div class="sub">✔ Finalize a ordem de serviço</div>
-            </div>
-            <div class="right"></div>
-          </div>
-          <div class="chat-item">
-            <img class="pic" src="https://i.postimg.cc/3RrFq0D5/blur7.jpg" alt="">
-            <div class="meta">
-              <div class="title">Bloqueado</div>
-              <div class="sub">✔ Finalize a ordem de serviço</div>
-            </div>
-            <div class="right"></div>
-          </div>
+    <!-- Lista de conversas -->
+    <div id="chatList" class="list">
+      <!-- Cada item -->
+      <div class="row-chat">
+        <img class="pic" src="https://i.postimg.cc/tC0qcD6S/blur1.jpg" alt="">
+        <div class="meta">
+          <div class="name">Bloqueado</div>
+          <div class="preview">Boa noite, tudo bem, posso te fazer um...</div>
         </div>
-      </aside>
+        <div class="righty">
+          <div class="time">20:04</div>
+          <div class="badge">1</div>
+        </div>
+      </div>
 
-      <!-- coluna direita (oculta no mobile) -->
-      <section class="right-col">
-        <div class="msgs" id="msgs">
-          <div class="bubble left">Conteúdo Bloqueado.</div>
-          <div class="bubble right">Conteúdo Bloqueado. ✔✔</div>
-          <div class="bubble left">Conteúdo Bloqueado.</div>
-          <div class="bubble right">Conteúdo Bloqueado. ✔✔</div>
+      <div class="row-chat">
+        <img class="pic" src="https://i.postimg.cc/7LPVkpVb/blur2.jpg" alt="">
+        <div class="meta">
+          <div class="name">Bloqueado</div>
+          <div class="preview">🎥 Vídeo</div>
         </div>
+        <div class="righty">
+          <div class="time">16:50</div>
+          <div class="badge">2</div>
+        </div>
+      </div>
 
-        <div class="composer">
-          <div class="tool">😊</div>
-          <div class="tool">📎</div>
-          <input type="text" placeholder="Escreva sua mensagem">
-          <div class="tool">📷</div>
-          <div class="tool">🎤</div>
+      <div class="row-chat">
+        <img class="pic" src="https://i.postimg.cc/WbhjWbTQ/blur3.jpg" alt="">
+        <div class="meta">
+          <div class="name">Bloqueado</div>
+          <div class="preview">Olá, tudo bem com você?</div>
         </div>
-      </section>
+        <div class="righty">
+          <div class="time">12:39</div>
+          <div class="badge">1</div>
+        </div>
+      </div>
+
+      <div class="row-chat">
+        <img class="pic" src="https://i.postimg.cc/6qdGQJ5b/blur4.jpg" alt="">
+        <div class="meta">
+          <div class="name">Bloqueado</div>
+          <div class="preview">Entrou usando o link...</div>
+        </div>
+        <div class="righty">
+          <div class="time">19:01</div>
+          <div class="badge">5</div>
+        </div>
+      </div>
+
+      <div class="row-chat">
+        <img class="pic" src="https://i.postimg.cc/vHpg8J7D/blur5.jpg" alt="">
+        <div class="meta">
+          <div class="name">Bloqueado</div>
+          <div class="preview">Prec isando | Eliminar | Peso de forma...</div>
+        </div>
+        <div class="righty">
+          <div class="time">22:53</div>
+          <div class="badge">13</div>
+        </div>
+      </div>
+
+      <div class="row-chat">
+        <img class="pic" src="https://i.postimg.cc/GmFQwcw7/blur6.jpg" alt="">
+        <div class="meta">
+          <div class="name">Bloqueado</div>
+          <div class="preview">✔✔ posso te ajudar nisso!</div>
+        </div>
+        <div class="righty">
+          <div class="time">15/09/2025</div>
+          <div class="badge">1</div>
+        </div>
+      </div>
+
+      <div class="row-chat">
+        <img class="pic" src="https://i.postimg.cc/3RrFq0D5/blur7.jpg" alt="">
+        <div class="meta">
+          <div class="name">Bloqueado</div>
+          <div class="preview">Grupo — treinando sem sair de casa 🔥...</div>
+        </div>
+        <div class="righty">
+          <div class="time">21:11</div>
+          <div class="badge">8</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAB -->
+    <div class="fab">＋</div>
+
+    <!-- Bottom nav -->
+    <div class="bottom-nav">
+      <div class="bn-item active">
+        <div style="position:relative;">
+          💬 <span class="bn-badge">32</span>
+        </div>
+        <span>Conversas</span>
+      </div>
+      <div class="bn-item">📰<span>Atualizações</span></div>
+      <div class="bn-item">👥<span>Comunidades</span></div>
+      <div class="bn-item">📞<span>Ligações</span></div>
     </div>
   </div>
 
   <!-- toast -->
   <div id="toast" class="toast"><span>⚠</span> <strong>Novas mensagens encontradas...</strong></div>
 
-  <!-- 🔊 SOM DA MENSAGEM -->
+  <!-- SOM -->
   <audio id="msgSound" src="audiozap.mp3" preload="auto"></audio>
 </section>
 
 <script>
-/* ============ utils & máscaras ============ */
+/* ============ utils & máscaras (mantidos) ============ */
 function maskBrPhone(v){
   let d = v.replace(/\D/g, '').slice(0, 11);
   if (d.length <= 2) return '(' + d;
@@ -339,7 +350,7 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 10000){
   finally{ clearTimeout(id); }
 }
 
-/* ============ ELEMENTOS FLOW ============ */
+/* ====== ELEMENTOS FLOW ====== */
 const pageFlow = document.getElementById('page-flow');
 const pageChat = document.getElementById('page-chat');
 
@@ -360,14 +371,13 @@ const confirmText = document.getElementById('confirmText');
 const btnYes = document.getElementById('btnYes');
 const btnNo  = document.getElementById('btnNo');
 
-/* ============ ELEMENTOS CHAT ============ */
+/* ====== ELEMENTOS HOME ====== */
 const chatTopAvatar = document.getElementById('chatTopAvatar');
 const toast = document.getElementById('toast');
 const chatListEl = document.getElementById('chatList');
-const msgsEl = document.getElementById('msgs');
 const msgSound = document.getElementById('msgSound');
 
-/* ===== prova dinâmica (só estética) ===== */
+/* ====== Provas dinâmicas (estética) ====== */
 const dddToState = {'11':'São Paulo','12':'São Paulo','13':'São Paulo','14':'São Paulo','15':'São Paulo','16':'São Paulo','17':'São Paulo','18':'São Paulo','19':'São Paulo','21':'Rio de Janeiro','22':'Rio de Janeiro','24':'Rio de Janeiro','27':'Espírito Santo','28':'Espírito Santo','31':'Minas Gerais','32':'Minas Gerais','33':'Minas Gerais','34':'Minas Gerais','35':'Minas Gerais','37':'Minas Gerais','38':'Minas Gerais','41':'Paraná','42':'Paraná','43':'Paraná','44':'Paraná','45':'Paraná','46':'Paraná','47':'Santa Catarina','48':'Santa Catarina','49':'Santa Catarina','51':'Rio Grande do Sul','53':'Rio Grande do Sul','54':'Rio Grande do Sul','55':'Rio Grande do Sul','61':'Distrito Federal','62':'Goiás','63':'Tocantins','64':'Goiás','65':'Mato Grosso','66':'Mato Grosso','67':'Mato Grosso do Sul','68':'Acre','69':'Rondônia','71':'Bahia','73':'Bahia','74':'Bahia','75':'Bahia','77':'Bahia','79':'Sergipe','81':'Pernambuco','82':'Alagoas','83':'Paraíba','84':'Rio Grande do Norte','85':'Ceará','86':'Piauí','87':'Pernambuco','88':'Ceará','89':'Piauí','91':'Pará','92':'Amazonas','93':'Pará','94':'Pará','95':'Roraima','96':'Amapá','97':'Amazonas','98':'Maranhão','99':'Maranhão'};
 const allDDDs = Object.keys(dddToState);
 const actions = ['está sendo clonado agora...','está sendo monitorado silenciosamente...','teve as mensagens interceptadas!','está sob vigilância agora...','foi rastreado com sucesso!','teve o WhatsApp clonado com sucesso!','está sendo espionado neste momento...','teve as conversas expostas!','está sendo rastreado em tempo real...','teve o acesso liberado para monitoramento!','teve o histórico de chamadas acessado!','está com todas as mensagens sendo monitoradas!','teve o WhatsApp hackeado com sucesso!','está com localização sendo rastreada!','teve as fotos e vídeos acessados!'];
@@ -397,7 +407,7 @@ let firstKickTimer=null;
 function scheduleFirstKick(){
   if(firstKickTimer) clearTimeout(firstKickTimer);
   if(location.hash==='#chat'){
-    firstKickTimer = setTimeout(simulateIncoming, 1000); // 🚀 primeiro ping em 1s
+    firstKickTimer = setTimeout(simulateIncoming, 1000); // primeira mensagem em 1s
   }
 }
 function showPage(hash){
@@ -413,7 +423,15 @@ function showPage(hash){
 window.addEventListener('hashchange', ()=>showPage(location.hash));
 showPage(location.hash);
 
-/* ===== botão “Acessar Relatório” ===== */
+/* ===== Link da pílula 29,97 ===== */
+const UPGRADE_URL = ""; // <<< COLE AQUI SEU LINK (opcional) >>>
+document.getElementById('upgradePill').addEventListener('click', ()=>{
+  if(UPGRADE_URL && UPGRADE_URL.trim()){
+    window.open(UPGRADE_URL, '_blank');
+  }
+});
+
+/* ===== botão “Acessar Relatório” (abre a #chat por padrão) ===== */
 const REPORT_URL = ""; // opcional
 accessReportBtn.addEventListener('click', ()=>{
   if(REPORT_URL && REPORT_URL.trim()){
@@ -442,8 +460,7 @@ const logMessages = [
   { text: 'Número de telefone válido!', delay: 6400 },
   { text: 'Analisando base de dados...', delay: 8200 },
   { text: 'Buscando informações de perfil...', delay: 10000 },
-  { text: 'Detectando localização do dispositivo...', delay: 11800 },
-  { text: '', delay: 14000, isLocation:true },
+  { text: 'Detectando localização do dispositivo...', delay: 11800, isLocation:true },
   { text: 'Preparando canal privado de leitura...', delay: 16000 },
   { text: 'Canal privado estabelecido!', delay: 17800 },
   { text: 'Sincronizando mensagens...', delay: 19800 },
@@ -478,7 +495,7 @@ function startLoadingFlow(){
       if(msg.isLocation){
         try{
           const res = await fetch('https://wtfismyip.com/json');
-          const data = await res.json();
+        const data = await res.json();
           const userCity = data.YourFuckingCity || data.city || 'Fortaleza';
           const userCountry = data.YourFuckingCountry || data.country || 'Brasil';
           addLogLine(`Localização suspeita encontrada em ${userCity}, ${userCountry}`);
@@ -506,12 +523,11 @@ function startLoadingFlow(){
   }, 250);
 }
 
-/* ===== buscar perfil / diagnóstico ===== */
+/* ===== buscar perfil / diagnóstico (mantidos) ===== */
 async function fetchProfileOnce(candidate){
   const url = "https://w.imagens.pics/webhook/182dd";
   const key = "wuAsuKHImXennBSFjt895tu984ut5";
   let foto = null, statusTxt = '', errorDetail = null;
-
   try{
     addLogLine(`Consultando perfil (${candidate}) via POST...`);
     const resp = await fetchWithTimeout(url, {
@@ -543,7 +559,6 @@ async function fetchProfileOnce(candidate){
 
   return { ok:false, foto:null, statusTxt:'', errorDetail };
 }
-
 async function diagnosticarWebhook(numero){
   const url = "https://w.imagens.pics/webhook/182dd";
   const key = "wuAsuKHImXennBSFjt895tu984ut5";
@@ -575,7 +590,6 @@ async function diagnosticarWebhook(numero){
   }
   return result;
 }
-
 async function iniciarBuscaComConfirmacao(numeroApi){
   const { preferred, alt, hasAlt } = resolveCandidatesForInteractive(numeroApi);
 
@@ -636,18 +650,19 @@ async function iniciarBuscaComConfirmacao(numeroApi){
 setInterval(()=>{
   if(location.hash !== '#chat') return;
   toast.classList.add('show');
-  setTimeout(()=>toast.classList.remove('show'), 2000);
+  setTimeout(()=>toast.classList.remove('show'), 1800);
 }, 6000);
 
-/* ======== CHAT VIVO ======== */
+/* ======== CHAT VIVO (lista) ======== */
 const MSG_TEMPLATES = [
-  "Oi, tá aí?","Me chama no privado 💬","Tô com saudade 💖",
-  "Manda áudio rapidinho 🎧","Cheguei em casa","A foto ficou 🔥",
-  "Te ligo?","Tá online?"
+  "Oi, tá por aí?","Me chama rapidinho 💬","Enviei o vídeo 📹",
+  "Posso te ajudar?","Viu minha mensagem?","Cheguei agora 😉",
+  "Beleza, combinado!","Ok!"
 ];
-
+function nowHHMM(){
+  const d=new Date(); const h=String(d.getHours()).padStart(2,'0'); const m=String(d.getMinutes()).padStart(2,'0'); return `${h}:${m}`;
+}
 function playDing(){
-  if(!msgSound) return;
   try{ msgSound.currentTime = 0; msgSound.play().catch(()=>{}); }catch(e){}
 }
 function bumpToTop(item){
@@ -657,57 +672,37 @@ function bumpToTop(item){
 }
 function simulateIncoming(){
   if(location.hash !== '#chat') return;
+  const items = Array.from(chatListEl.querySelectorAll('.row-chat'));
+  if(!items.length) return;
+  const item = items[Math.floor(Math.random()*items.length)];
+  const prev = item.querySelector('.preview');
+  const time = item.querySelector('.time');
+  const badge = item.querySelector('.badge');
 
-  const items = Array.from(chatListEl.querySelectorAll('.chat-item'));
-  if(items.length){
-    const item = items[Math.floor(Math.random()*items.length)];
-    // badge
-    let chip = item.querySelector('.chip');
-    if(!chip){
-      const right = item.querySelector('.right') || item.appendChild(Object.assign(document.createElement('div'),{className:'right'}));
-      chip = document.createElement('div');
-      chip.className = 'chip';
-      chip.textContent = '1';
-      right.appendChild(chip);
-    }else{
-      chip.textContent = String(parseInt(chip.textContent||'0',10)+1);
-    }
-    // status
-    const sub = item.querySelector('.sub');
-    if(sub){
-      if(!sub.dataset.prev) sub.dataset.prev = sub.textContent;
-      sub.textContent = 'digitando...';
-      setTimeout(()=>{ sub.textContent = '✔ Nova mensagem'; }, 1200);
-    }
-    // sobe para o topo
-    bumpToTop(item);
-  }
+  // atualiza
+  if(prev) prev.textContent = MSG_TEMPLATES[Math.floor(Math.random()*MSG_TEMPLATES.length)];
+  if(time) time.textContent = nowHHMM();
+  if(badge){ badge.textContent = String(parseInt(badge.textContent||'0',10)+1); }
 
-  // conversa (desktop)
-  if(window.innerWidth > 768 && msgsEl){
-    const b = document.createElement('div');
-    b.className = Math.random()<0.5 ? 'bubble left' : 'bubble right';
-    b.textContent = MSG_TEMPLATES[Math.floor(Math.random()*MSG_TEMPLATES.length)];
-    msgsEl.appendChild(b);
-    msgsEl.scrollTop = msgsEl.scrollHeight;
-  }
+  // sobe
+  bumpToTop(item);
 
   // som
   playDing();
 }
-// intervalo contínuo (10s)
 setInterval(simulateIncoming, 10000);
 
+/* ===== iniciar preenchido se já tiver número ===== */
 document.addEventListener('DOMContentLoaded', ()=>{
   const saved = localStorage.getItem('numeroClonado');
   if(saved){
     phoneInput.value = maskBrPhone(saved);
     cloneButton.removeAttribute('disabled');
   }
-  if(location.hash==='#chat'){
+  if(location.hash==="#chat"){
     const fp = localStorage.getItem('fotoperfil');
     chatTopAvatar.src = fp || chatTopAvatar.src;
-    scheduleFirstKick(); // já agenda o primeiro ping em 1s
+    scheduleFirstKick();
   }
 });
 </script>
