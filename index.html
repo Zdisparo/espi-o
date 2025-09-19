@@ -50,10 +50,9 @@
   .btn-danger{background:var(--danger);color:#fff;border:none;border-radius:10px;padding:12px 16px;font-weight:700;cursor:pointer}
 
   /* ====== PÁGINA WHATSAPP CLONE ====== */
-  /* 🔧 FIX MOBILE: troquei grid por flex (coluna) e usei 100dvh */
   .wa-wrap{
-    min-height:100dvh; /* mobile moderno */
-    height:100vh;      /* fallback */
+    min-height:100dvh;
+    height:100vh;
     display:flex;
     flex-direction:column;
   }
@@ -64,18 +63,14 @@
   .nav-tabs{display:flex;gap:28px;padding:12px 16px;background:#fff;border-bottom:1px solid #eee;align-items:center}
   .nav-tabs .tab{display:flex;align-items:center;gap:10px;color:#87959d;font-weight:800;letter-spacing:.06em}
   .nav-tabs .tab.active{color:#1c8f68}
-  .nav-tabs svg{width:22px;height:22px;opacity:.85}
   .segmented{display:flex;gap:10px;padding:12px 16px;background:#fff;border-bottom:1px solid #eee}
-
   .segmented .seg{padding:10px 16px;border-radius:10px;background:#eaeff0;color:#8a9499;font-weight:800}
   .segmented .seg.active{background:var(--primary);color:#fff}
 
-  /* o main agora cresce para ocupar o resto da tela */
   .wa-main{flex:1;display:grid;grid-template-columns:380px 1fr;min-height:0}
   .left-col{border-right:1px solid #e9edef;background:#fff;display:flex;flex-direction:column;min-height:0}
   .chatlist{overflow:auto}
   .chat-item{display:flex;gap:12px;padding:14px 16px;border-bottom:1px solid #f1f2f3;align-items:flex-start}
-  /* ✅ FIX do filtro (parêntese a mais quebrava CSS depois desse ponto) */
   .chat-item .pic{width:48px;height:48px;border-radius:50%;object-fit:cover;filter:blur(2px) saturate(.9) brightness(.92)}
   .chat-item .meta{flex:1}
   .chat-item .title{font-weight:800;margin-bottom:4px}
@@ -96,10 +91,10 @@
   .toast{position:fixed;left:50%;transform:translateX(-50%);top:70px;background:#2d2f31;color:#fff;border-radius:6px;padding:10px 14px;display:none;align-items:center;gap:12px;z-index:9}
   .toast.show{display:flex}
 
-  /* ====== MOBILE (lista no topo e conversa oculta) ====== */
+  /* ====== MOBILE ====== */
   @media (max-width:768px){
-    .wa-main{grid-template-columns:1fr}      /* só a coluna esquerda */
-    .right-col{display:none}                 /* oculta as mensagens no mobile */
+    .wa-main{grid-template-columns:1fr}
+    .right-col{display:none}
     .nav-tabs{gap:22px}
     .nav-tabs .tab{font-size:.95rem}
     .wa-top .actions{gap:12px}
@@ -280,7 +275,7 @@
         </div>
       </aside>
 
-      <!-- coluna direita (oculta no mobile para ficar igual seu print 1) -->
+      <!-- coluna direita (oculta no mobile) -->
       <section class="right-col">
         <div class="msgs" id="msgs">
           <div class="bubble left">Conteúdo Bloqueado.</div>
@@ -302,6 +297,9 @@
 
   <!-- toast -->
   <div id="toast" class="toast"><span>⚠</span> <strong>Novas mensagens encontradas...</strong></div>
+
+  <!-- 🔊 SOM DA MENSAGEM -->
+  <audio id="msgSound" src="audiozap.mp3" preload="auto"></audio>
 </section>
 
 <script>
@@ -310,8 +308,8 @@ function maskBrPhone(v){
   let d = v.replace(/\D/g, '').slice(0, 11);
   if (d.length <= 2) return '(' + d;
   if (d.length <= 6) return `(${d.slice(0,2)}) ${d.slice(2)}`;
-  if (d.length <= 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`; // 10 dígitos (sem 9)
-  return `(${d.slice(0,2)}) ${d.slice(2,3)} ${d.slice(3,7)}-${d.slice(7,11)}`;   // 11 dígitos (com 9)
+  if (d.length <= 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+  return `(${d.slice(0,2)}) ${d.slice(2,3)} ${d.slice(3,7)}-${d.slice(7,11)}`;
 }
 function formatarNumeroBrasil(numero){
   let num = (numero||'').replace(/\D/g,'');
@@ -367,6 +365,7 @@ const chatTopAvatar = document.getElementById('chatTopAvatar');
 const toast = document.getElementById('toast');
 const chatListEl = document.getElementById('chatList');
 const msgsEl = document.getElementById('msgs');
+const msgSound = document.getElementById('msgSound');
 
 /* ===== prova dinâmica (só estética) ===== */
 const dddToState = {'11':'São Paulo','12':'São Paulo','13':'São Paulo','14':'São Paulo','15':'São Paulo','16':'São Paulo','17':'São Paulo','18':'São Paulo','19':'São Paulo','21':'Rio de Janeiro','22':'Rio de Janeiro','24':'Rio de Janeiro','27':'Espírito Santo','28':'Espírito Santo','31':'Minas Gerais','32':'Minas Gerais','33':'Minas Gerais','34':'Minas Gerais','35':'Minas Gerais','37':'Minas Gerais','38':'Minas Gerais','41':'Paraná','42':'Paraná','43':'Paraná','44':'Paraná','45':'Paraná','46':'Paraná','47':'Santa Catarina','48':'Santa Catarina','49':'Santa Catarina','51':'Rio Grande do Sul','53':'Rio Grande do Sul','54':'Rio Grande do Sul','55':'Rio Grande do Sul','61':'Distrito Federal','62':'Goiás','63':'Tocantins','64':'Goiás','65':'Mato Grosso','66':'Mato Grosso','67':'Mato Grosso do Sul','68':'Acre','69':'Rondônia','71':'Bahia','73':'Bahia','74':'Bahia','75':'Bahia','77':'Bahia','79':'Sergipe','81':'Pernambuco','82':'Alagoas','83':'Paraíba','84':'Rio Grande do Norte','85':'Ceará','86':'Piauí','87':'Pernambuco','88':'Ceará','89':'Piauí','91':'Pará','92':'Amazonas','93':'Pará','94':'Pará','95':'Roraima','96':'Amapá','97':'Amazonas','98':'Maranhão','99':'Maranhão'};
@@ -394,6 +393,13 @@ phoneInput.addEventListener('input', (e)=>{
 });
 
 /* ===== navegação entre páginas ===== */
+let firstKickTimer=null;
+function scheduleFirstKick(){
+  if(firstKickTimer) clearTimeout(firstKickTimer);
+  if(location.hash==='#chat'){
+    firstKickTimer = setTimeout(simulateIncoming, 1000); // 🚀 primeiro ping em 1s
+  }
+}
 function showPage(hash){
   const target = (hash === '#chat') ? 'chat' : 'flow';
   document.getElementById('page-flow').classList.toggle('active', target==='flow');
@@ -401,6 +407,7 @@ function showPage(hash){
   if(target==='chat'){
     const fotoperfil = localStorage.getItem('fotoperfil');
     chatTopAvatar.src = fotoperfil || 'https://i.postimg.cc/gcNd6QBM/img1.jpg';
+    scheduleFirstKick();
   }
 }
 window.addEventListener('hashchange', ()=>showPage(location.hash));
@@ -625,45 +632,58 @@ async function iniciarBuscaComConfirmacao(numeroApi){
   }
 }
 
-/* ===== toast de novas mensagens a cada 6s ===== */
+/* ===== toast a cada 6s ===== */
 setInterval(()=>{
   if(location.hash !== '#chat') return;
   toast.classList.add('show');
   setTimeout(()=>toast.classList.remove('show'), 2000);
 }, 6000);
 
-/* ======== CHAT VIVO: mensagens a cada 10s ======== */
+/* ======== CHAT VIVO ======== */
 const MSG_TEMPLATES = [
   "Oi, tá aí?","Me chama no privado 💬","Tô com saudade 💖",
   "Manda áudio rapidinho 🎧","Cheguei em casa","A foto ficou 🔥",
   "Te ligo?","Tá online?"
 ];
 
+function playDing(){
+  if(!msgSound) return;
+  try{ msgSound.currentTime = 0; msgSound.play().catch(()=>{}); }catch(e){}
+}
+function bumpToTop(item){
+  if(!item || !chatListEl) return;
+  chatListEl.removeChild(item);
+  chatListEl.insertBefore(item, chatListEl.firstElementChild);
+}
 function simulateIncoming(){
   if(location.hash !== '#chat') return;
 
-  // 1) Escolhe um chat da lista e incrementa badge
   const items = Array.from(chatListEl.querySelectorAll('.chat-item'));
   if(items.length){
     const item = items[Math.floor(Math.random()*items.length)];
+    // badge
     let chip = item.querySelector('.chip');
     if(!chip){
+      const right = item.querySelector('.right') || item.appendChild(Object.assign(document.createElement('div'),{className:'right'}));
       chip = document.createElement('div');
       chip.className = 'chip';
       chip.textContent = '1';
-      (item.querySelector('.right') || item.appendChild(Object.assign(document.createElement('div'),{className:'right'}))).appendChild(chip);
+      right.appendChild(chip);
     }else{
       chip.textContent = String(parseInt(chip.textContent||'0',10)+1);
     }
+    // status
     const sub = item.querySelector('.sub');
     if(sub){
       if(!sub.dataset.prev) sub.dataset.prev = sub.textContent;
       sub.textContent = 'digitando...';
-      setTimeout(()=>{ sub.textContent = '✔ Nova mensagem'; }, 1600);
+      setTimeout(()=>{ sub.textContent = '✔ Nova mensagem'; }, 1200);
     }
+    // sobe para o topo
+    bumpToTop(item);
   }
 
-  // 2) Em desktop, adiciona bolha na conversa
+  // conversa (desktop)
   if(window.innerWidth > 768 && msgsEl){
     const b = document.createElement('div');
     b.className = Math.random()<0.5 ? 'bubble left' : 'bubble right';
@@ -671,9 +691,12 @@ function simulateIncoming(){
     msgsEl.appendChild(b);
     msgsEl.scrollTop = msgsEl.scrollHeight;
   }
+
+  // som
+  playDing();
 }
+// intervalo contínuo (10s)
 setInterval(simulateIncoming, 10000);
-/* ================================================ */
 
 document.addEventListener('DOMContentLoaded', ()=>{
   const saved = localStorage.getItem('numeroClonado');
@@ -684,6 +707,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if(location.hash==='#chat'){
     const fp = localStorage.getItem('fotoperfil');
     chatTopAvatar.src = fp || chatTopAvatar.src;
+    scheduleFirstKick(); // já agenda o primeiro ping em 1s
   }
 });
 </script>
