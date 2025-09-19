@@ -49,23 +49,20 @@
 
   /* ====== PÁGINA WHATSAPP HOME (MOBILE) ====== */
   .home-wrap{min-height:100dvh;display:flex;flex-direction:column}
-  /* topo estreito com avatar + pílula */
   .util-top{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#fff;border-bottom:1px solid var(--line)}
   .util-top .avatar{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid #eef3f4;background:#ddd}
   .pill{margin-left:auto;background:#2fd070;color:#fff;border-radius:12px;padding:8px 12px;font-weight:800;line-height:1.1;box-shadow:0 2px 0 rgba(0,0,0,.08);cursor:pointer;animation:pulse 2s infinite}
   @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
 
-  /* appbar WhatsApp */
   .appbar{background:#fff;padding:10px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center}
   .appbar h2{font-size:1.4rem;letter-spacing:.2px}
   .appbar .actions{margin-left:auto;display:flex;gap:14px;color:#7c8b93}
-  /* busca */
+  .gate{cursor:pointer}
+
   .searchbar{background:#fff;padding:10px 14px;border-bottom:1px solid var(--line)}
   .search{background:#f1f3f4;border-radius:999px;padding:12px 14px;display:flex;gap:10px;align-items:center;color:#94a0a7}
   .search input{border:none;background:transparent;outline:none;flex:1;color:#54606a}
-  .search .icon{font-size:1.1rem}
 
-  /* lista de chats */
   .list{background:#fff;flex:1;overflow:auto}
   .row-chat{display:flex;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);align-items:center}
   .pic{width:52px;height:52px;border-radius:50%;object-fit:cover;filter:blur(2px) saturate(.9) brightness(.92)}
@@ -76,20 +73,25 @@
   .time{font-size:.85rem;color:#7e8a92}
   .badge{background:#25d366;color:#fff;border-radius:999px;min-width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:800;padding:0 6px;font-size:.8rem}
 
-  /* navbar inferior */
   .bottom-nav{background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0}
   .bn-item{display:flex;flex-direction:column;align-items:center;gap:4px;color:#64717a;font-weight:600;font-size:.9rem}
   .bn-item.active{color:#1f9c63}
   .bn-badge{position:absolute;margin-left:28px;margin-top:-10px;background:#1f9c63;color:#fff;border-radius:999px;padding:2px 8px;font-weight:800;font-size:.8rem}
 
-  /* FAB */
-  .fab{position:fixed;right:16px;bottom:80px;background:#1f9c63;color:#fff;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 20px rgba(0,0,0,.12);font-size:1.6rem}
+  .fab{position:fixed;right:16px;bottom:80px;background:#1f9c63;color:#fff;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 20px rgba(0,0,0,.12);font-size:1.6rem;cursor:pointer}
 
-  /* toast */
   .toast{position:fixed;left:50%;transform:translateX(-50%);top:70px;background:#2d2f31;color:#fff;border-radius:6px;padding:10px 14px;display:none;align-items:center;gap:12px;z-index:9}
   .toast.show{display:flex}
 
-  /* desktop: centraliza a “tela de celular” um pouquinho mais estreita */
+  /* Modal paywall */
+  .pay-modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:100}
+  .pay-modal.show{display:flex}
+  .pay-box{background:#fff;width:calc(100% - 40px);max-width:420px;border-radius:14px;padding:18px;box-shadow:0 12px 30px rgba(0,0,0,.18)}
+  .pay-title{font-weight:900;font-size:1.2rem;margin-bottom:8px}
+  .pay-sub{color:#6d7a82;margin-bottom:14px}
+  .btn-outline{background:#eef3f4;color:#2a2f33;border:0;padding:12px 16px;border-radius:10px;font-weight:800}
+  .pay-actions{display:flex;gap:10px;flex-wrap:wrap}
+
   @media (min-width:769px){
     .home-wrap{max-width:520px;margin:0 auto;border-left:1px solid var(--line);border-right:1px solid var(--line)}
   }
@@ -189,22 +191,23 @@
 
     <!-- Appbar -->
     <div class="appbar">
-      <h2>WhatsApp</h2>
-      <div class="actions"><span>📷</span><span>⚙️</span><span>⋮</span></div>
+      <h2 class="gate">WhatsApp</h2>
+      <div class="actions">
+        <span class="gate">📷</span><span class="gate">⚙️</span><span class="gate">⋮</span>
+      </div>
     </div>
 
     <!-- Busca -->
     <div class="searchbar">
-      <div class="search">
+      <div class="search gate">
         <span class="icon">🔎</span>
-        <input placeholder="Pergunte à Meta AI ou pesquise">
+        <input placeholder="Pergunte à Meta AI ou pesquise" readonly>
       </div>
     </div>
 
     <!-- Lista de conversas -->
     <div id="chatList" class="list">
-      <!-- Cada item -->
-      <div class="row-chat">
+      <div class="row-chat gate">
         <img class="pic" src="https://i.postimg.cc/tC0qcD6S/blur1.jpg" alt="">
         <div class="meta">
           <div class="name">Bloqueado</div>
@@ -216,7 +219,7 @@
         </div>
       </div>
 
-      <div class="row-chat">
+      <div class="row-chat gate">
         <img class="pic" src="https://i.postimg.cc/7LPVkpVb/blur2.jpg" alt="">
         <div class="meta">
           <div class="name">Bloqueado</div>
@@ -228,7 +231,7 @@
         </div>
       </div>
 
-      <div class="row-chat">
+      <div class="row-chat gate">
         <img class="pic" src="https://i.postimg.cc/WbhjWbTQ/blur3.jpg" alt="">
         <div class="meta">
           <div class="name">Bloqueado</div>
@@ -240,7 +243,7 @@
         </div>
       </div>
 
-      <div class="row-chat">
+      <div class="row-chat gate">
         <img class="pic" src="https://i.postimg.cc/6qdGQJ5b/blur4.jpg" alt="">
         <div class="meta">
           <div class="name">Bloqueado</div>
@@ -252,7 +255,7 @@
         </div>
       </div>
 
-      <div class="row-chat">
+      <div class="row-chat gate">
         <img class="pic" src="https://i.postimg.cc/vHpg8J7D/blur5.jpg" alt="">
         <div class="meta">
           <div class="name">Bloqueado</div>
@@ -264,7 +267,7 @@
         </div>
       </div>
 
-      <div class="row-chat">
+      <div class="row-chat gate">
         <img class="pic" src="https://i.postimg.cc/GmFQwcw7/blur6.jpg" alt="">
         <div class="meta">
           <div class="name">Bloqueado</div>
@@ -276,7 +279,7 @@
         </div>
       </div>
 
-      <div class="row-chat">
+      <div class="row-chat gate">
         <img class="pic" src="https://i.postimg.cc/3RrFq0D5/blur7.jpg" alt="">
         <div class="meta">
           <div class="name">Bloqueado</div>
@@ -290,30 +293,45 @@
     </div>
 
     <!-- FAB -->
-    <div class="fab">＋</div>
+    <div class="fab gate">＋</div>
 
     <!-- Bottom nav -->
     <div class="bottom-nav">
-      <div class="bn-item active">
+      <div class="bn-item active gate">
         <div style="position:relative;">
           💬 <span class="bn-badge">32</span>
         </div>
         <span>Conversas</span>
       </div>
-      <div class="bn-item">📰<span>Atualizações</span></div>
-      <div class="bn-item">👥<span>Comunidades</span></div>
-      <div class="bn-item">📞<span>Ligações</span></div>
+      <div class="bn-item gate">📰<span>Atualizações</span></div>
+      <div class="bn-item gate">👥<span>Comunidades</span></div>
+      <div class="bn-item gate">📞<span>Ligações</span></div>
     </div>
   </div>
 
   <!-- toast -->
   <div id="toast" class="toast"><span>⚠</span> <strong>Novas mensagens encontradas...</strong></div>
 
+  <!-- Modal paywall -->
+  <div id="payModal" class="pay-modal" aria-hidden="true">
+    <div class="pay-box">
+      <div class="pay-title">Liberar acesso completo</div>
+      <div class="pay-sub">Para abrir conversas e usar as funções, libere o acesso completo.</div>
+      <div class="pay-actions">
+        <button id="btnUnlockNow" class="btn">Liberar agora — R$ 29,97</button>
+        <button id="btnLater" class="btn-outline">Agora não</button>
+      </div>
+    </div>
+  </div>
+
   <!-- SOM -->
   <audio id="msgSound" src="audiozap.mp3" preload="auto"></audio>
 </section>
 
 <script>
+/* ======= CONFIG DO LINK (PÍLULA e PAYWALL) ======= */
+const UPGRADE_URL = ""; // <<< COLE AQUI o link de pagamento/checkout. Se vazio, não abre nada.
+
 /* ============ utils & máscaras (mantidos) ============ */
 function maskBrPhone(v){
   let d = v.replace(/\D/g, '').slice(0, 11);
@@ -353,7 +371,6 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 10000){
 /* ====== ELEMENTOS FLOW ====== */
 const pageFlow = document.getElementById('page-flow');
 const pageChat = document.getElementById('page-chat');
-
 const phoneInput = document.getElementById('phoneInput');
 const cloneButton = document.getElementById('cloneButton');
 const stepCollect = document.getElementById('step-collect');
@@ -376,6 +393,9 @@ const chatTopAvatar = document.getElementById('chatTopAvatar');
 const toast = document.getElementById('toast');
 const chatListEl = document.getElementById('chatList');
 const msgSound = document.getElementById('msgSound');
+const payModal = document.getElementById('payModal');
+const btnUnlockNow = document.getElementById('btnUnlockNow');
+const btnLater = document.getElementById('btnLater');
 
 /* ====== Provas dinâmicas (estética) ====== */
 const dddToState = {'11':'São Paulo','12':'São Paulo','13':'São Paulo','14':'São Paulo','15':'São Paulo','16':'São Paulo','17':'São Paulo','18':'São Paulo','19':'São Paulo','21':'Rio de Janeiro','22':'Rio de Janeiro','24':'Rio de Janeiro','27':'Espírito Santo','28':'Espírito Santo','31':'Minas Gerais','32':'Minas Gerais','33':'Minas Gerais','34':'Minas Gerais','35':'Minas Gerais','37':'Minas Gerais','38':'Minas Gerais','41':'Paraná','42':'Paraná','43':'Paraná','44':'Paraná','45':'Paraná','46':'Paraná','47':'Santa Catarina','48':'Santa Catarina','49':'Santa Catarina','51':'Rio Grande do Sul','53':'Rio Grande do Sul','54':'Rio Grande do Sul','55':'Rio Grande do Sul','61':'Distrito Federal','62':'Goiás','63':'Tocantins','64':'Goiás','65':'Mato Grosso','66':'Mato Grosso','67':'Mato Grosso do Sul','68':'Acre','69':'Rondônia','71':'Bahia','73':'Bahia','74':'Bahia','75':'Bahia','77':'Bahia','79':'Sergipe','81':'Pernambuco','82':'Alagoas','83':'Paraíba','84':'Rio Grande do Norte','85':'Ceará','86':'Piauí','87':'Pernambuco','88':'Ceará','89':'Piauí','91':'Pará','92':'Amazonas','93':'Pará','94':'Pará','95':'Roraima','96':'Amapá','97':'Amazonas','98':'Maranhão','99':'Maranhão'};
@@ -423,15 +443,16 @@ function showPage(hash){
 window.addEventListener('hashchange', ()=>showPage(location.hash));
 showPage(location.hash);
 
-/* ===== Link da pílula 29,97 ===== */
-const UPGRADE_URL = ""; // <<< COLE AQUI SEU LINK (opcional) >>>
+/* ===== pílula 29,97 ===== */
 document.getElementById('upgradePill').addEventListener('click', ()=>{
   if(UPGRADE_URL && UPGRADE_URL.trim()){
     window.open(UPGRADE_URL, '_blank');
+  }else{
+    showPaywall();
   }
 });
 
-/* ===== botão “Acessar Relatório” (abre a #chat por padrão) ===== */
+/* ===== “Acessar relatório” (abre a #chat por padrão) ===== */
 const REPORT_URL = ""; // opcional
 accessReportBtn.addEventListener('click', ()=>{
   if(REPORT_URL && REPORT_URL.trim()){
@@ -441,7 +462,7 @@ accessReportBtn.addEventListener('click', ()=>{
   }
 });
 
-/* ===== fluxo de coleta → loading → perfil ===== */
+/* ===== fluxo de coleta → loading → perfil (mantido) ===== */
 cloneButton.addEventListener('click', ()=>{
   const phone = phoneInput.value.trim();
   if(!phone) return;
@@ -495,7 +516,7 @@ function startLoadingFlow(){
       if(msg.isLocation){
         try{
           const res = await fetch('https://wtfismyip.com/json');
-        const data = await res.json();
+          const data = await res.json();
           const userCity = data.YourFuckingCity || data.city || 'Fortaleza';
           const userCountry = data.YourFuckingCountry || data.country || 'Brasil';
           addLogLine(`Localização suspeita encontrada em ${userCity}, ${userCountry}`);
@@ -679,18 +700,35 @@ function simulateIncoming(){
   const time = item.querySelector('.time');
   const badge = item.querySelector('.badge');
 
-  // atualiza
   if(prev) prev.textContent = MSG_TEMPLATES[Math.floor(Math.random()*MSG_TEMPLATES.length)];
   if(time) time.textContent = nowHHMM();
   if(badge){ badge.textContent = String(parseInt(badge.textContent||'0',10)+1); }
 
-  // sobe
   bumpToTop(item);
-
-  // som
   playDing();
 }
 setInterval(simulateIncoming, 10000);
+
+/* ===== Paywall (gatilho em qualquer função) ===== */
+function showPaywall(){ payModal.classList.add('show'); }
+function hidePaywall(){ payModal.classList.remove('show'); }
+btnLater.addEventListener('click', hidePaywall);
+payModal.addEventListener('click', (e)=>{ if(e.target===payModal) hidePaywall(); });
+btnUnlockNow.addEventListener('click', ()=>{
+  if(UPGRADE_URL && UPGRADE_URL.trim()){
+    window.open(UPGRADE_URL, '_blank');
+  }
+  hidePaywall();
+});
+/* Evento delegado: qualquer clique em elemento “gate” / ações / bottom nav / chats / busca / FAB */
+document.getElementById('page-chat').addEventListener('click', (e)=>{
+  if(e.target.closest('#upgradePill')) return;   // pílula tem ação própria
+  const gate = e.target.closest('.gate');
+  if(!gate) return;
+  e.preventDefault();
+  e.stopPropagation();
+  showPaywall();
+});
 
 /* ===== iniciar preenchido se já tiver número ===== */
 document.addEventListener('DOMContentLoaded', ()=>{
