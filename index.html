@@ -68,6 +68,7 @@
   .pic{width:52px;height:52px;border-radius:50%;object-fit:cover;filter:blur(2px) saturate(.9) brightness(.92)}
   .meta{flex:1;min-width:0}
   .name{font-weight:800}
+  /* preview padrão */
   .preview{font-size:.95rem;color:#748089;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
   .righty{display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:52px}
   .time{font-size:.85rem;color:#7e8a92}
@@ -100,6 +101,30 @@
   .row{display:flex;align-items:center;gap:10px}
   .success{color:var(--success)}
   @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ========= NOVO: estado de digitação no preview ========= */
+  .preview.typing{
+    color:#1f9c63;
+    font-weight:700;
+  }
+  .preview.typing::after{ content:''; } /* garante que nenhum texto “extra” seja colado */
+
+  .preview.typing .dots{
+    display:inline-block;
+    overflow:hidden;
+    vertical-align:baseline;
+    width:0;
+    animation:typingDots 1.2s steps(4,end) infinite;
+  }
+  .preview.typing .dots::after{ content:'...'; }
+
+  @keyframes typingDots{
+    0%{width:0}
+    25%{width:.35em}
+    50%{width:.7em}
+    75%{width:1.05em}
+    100%{width:0}
+  }
 </style>
 </head>
 <body>
@@ -330,7 +355,7 @@
 
 <script>
 /* ======= CONFIG DO LINK (PÍLULA e PAYWALL) ======= */
-const UPGRADE_URL = ""; // <<< COLE AQUI o link de pagamento/checkout. Se vazio, não abre nada.
+const UPGRADE_URL = ""; // <<< COLE AQUI o link de pagamento/checkout. Se vazio, abre o paywall.
 
 /* ============ utils & máscaras (mantidos) ============ */
 function maskBrPhone(v){
@@ -667,18 +692,18 @@ async function iniciarBuscaComConfirmacao(numeroApi){
   }
 }
 
-/* ===== toast a cada 6s ===== */
+/* ===== toast periódico ===== */
 setInterval(()=>{
   if(location.hash !== '#chat') return;
   toast.classList.add('show');
   setTimeout(()=>toast.classList.remove('show'), 1800);
-}, 15000);
+}, 20000);
 
 /* ======== CHAT VIVO (lista) ======== */
 const MSG_TEMPLATES = [
-  "Oi, tá por aí?","Me chama rapidinho ","Enviei o vídeo 📹",
-  "vem que dia agora?","Viu minha mensagem?","Cheguei agora 😉",
-  "Beleza, combinado!","Ok!"
+  "Oi, tá por aí?","Me chama rapidinho","Enviei o vídeo 📹",
+  "Vem que dia agora?","Viu minha mensagem?","Cheguei agora 😉",
+  "Beleza, combinado!","Ok!","Manda a localização 📍"
 ];
 function nowHHMM(){
   const d=new Date(); const h=String(d.getHours()).padStart(2,'0'); const m=String(d.getMinutes()).padStart(2,'0'); return `${h}:${m}`;
@@ -691,6 +716,31 @@ function bumpToTop(item){
   chatListEl.removeChild(item);
   chatListEl.insertBefore(item, chatListEl.firstElementChild);
 }
+
+/* NOVO: fase de digitação — substitui o preview por “digitando…” e depois chama o callback */
+function typingPhase(item, done){
+  const prev = item.querySelector('.preview');
+  if(!prev){ done?.(); return; }
+
+  const originalHTML = prev.innerHTML;
+  prev.dataset.old = originalHTML;
+
+  prev.classList.add('typing');
+  prev.innerHTML = 'digitando<span class="dots"></span>';
+
+  const t = setTimeout(()=>{
+    prev.classList.remove('typing');
+    prev.innerHTML = originalHTML;
+    done?.(originalHTML);
+  }, 10000 + Math.random()*2000);
+
+  return ()=>{
+    clearTimeout(t);
+    prev.classList.remove('typing');
+    prev.innerHTML = originalHTML;
+  };
+}
+
 function simulateIncoming(){
   if(location.hash !== '#chat') return;
   const items = Array.from(chatListEl.querySelectorAll('.row-chat'));
@@ -700,12 +750,14 @@ function simulateIncoming(){
   const time = item.querySelector('.time');
   const badge = item.querySelector('.badge');
 
-  if(prev) prev.textContent = MSG_TEMPLATES[Math.floor(Math.random()*MSG_TEMPLATES.length)];
-  if(time) time.textContent = nowHHMM();
-  if(badge){ badge.textContent = String(parseInt(badge.textContent||'0',10)+1); }
-
-  bumpToTop(item);
-  playDing();
+  // entra em fase de digitação; quando terminar, aplica a nova mensagem
+  typingPhase(item, ()=>{
+    if(prev) prev.textContent = MSG_TEMPLATES[Math.floor(Math.random()*MSG_TEMPLATES.length)];
+    if(time) time.textContent = nowHHMM();
+    if(badge){ badge.textContent = String(parseInt(badge.textContent||'0',10)+1); }
+    bumpToTop(item);
+    playDing();
+  });
 }
 setInterval(simulateIncoming, 10000);
 
