@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Simulação — Coleta → Busca → WhatsApp Clone</title>
+<title>Demo Mensageiro — Coleta → Busca → Chat</title>
 
 <style>
   :root{
     --primary:#25D366; --primary-dark:#128C7E; --bg:#f5f5f1; --white:#fff;
     --muted:#7f8c8d; --text:#1f2a32; --danger:#ff3b30; --warn:#ffcc00;
     --success:#34c759; --soft:#edf2f4; --line:#e6e8ea; --chip:#1aaa65;
+    --overlay:rgba(0,0,0,.45);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Segoe UI',Tahoma,Arial,Verdana,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
@@ -50,7 +51,7 @@
   .detail{background:#fff;padding:12px;border-radius:10px}
   .confirm-bar{display:none;margin-top:12px;padding:10px;border:1px dashed #dde;border-radius:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
 
-  /* ====== PÁGINA WHATSAPP HOME (MOBILE) ====== */
+  /* ====== PÁGINA CHAT (MOBILE FIRST) ====== */
   .home-wrap{min-height:100dvh;display:flex;flex-direction:column}
   .util-top{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#fff;border-bottom:1px solid var(--line)}
   .util-top .avatar{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid #eef3f4;background:#ddd}
@@ -86,23 +87,35 @@
   .toast{position:fixed;left:50%;transform:translateX(-50%);top:70px;background:#2d2f31;color:#fff;border-radius:6px;padding:10px 14px;display:none;align-items:center;gap:12px;z-index:9}
   .toast.show{display:flex}
 
-  /* Modal paywall (chat) */
-  .pay-modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:100}
+  /* Modal paywall (convite) */
+  .pay-modal{position:fixed;inset:0;background:var(--overlay);display:none;align-items:center;justify-content:center;z-index:100}
   .pay-modal.show{display:flex}
-  .pay-box{background:#fff;width:calc(100% - 40px);max-width:420px;border-radius:14px;padding:18px;box-shadow:0 12px 30px rgba(0,0,0,.18)}
+  .pay-box{background:#fff;width:calc(100% - 40px);max-width:420px;border-radius:14px;padding:18px;box-shadow:0 12px 30px rgba(0,0,0,.18);animation:pop .2s ease}
   .pay-title{font-weight:900;font-size:1.2rem;margin-bottom:8px}
   .pay-sub{color:#6d7a82;margin-bottom:14px}
   .btn-outline{background:#eef3f4;color:#2a2f33;border:0;padding:12px 16px;border-radius:10px;font-weight:800}
   .pay-actions{display:flex;gap:10px;flex-wrap:wrap}
+  @keyframes pop{from{transform:scale(.96);opacity:.7}to{transform:scale(1);opacity:1}}
+
+  /* Modal checkout (iframe) */
+  .checkout-modal{position:fixed;inset:0;background:var(--overlay);display:none;align-items:center;justify-content:center;z-index:110}
+  .checkout-modal.show{display:flex}
+  .checkout-box{background:#fff;width:calc(100% - 24px);max-width:520px;height:80vh;border-radius:14px;box-shadow:0 16px 36px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden;animation:pop .2s ease}
+  .checkout-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
+  .checkout-head strong{font-weight:900}
+  .checkout-body{flex:1}
+  .checkout-body iframe{border:0;width:100%;height:100%}
+  .checkout-foot{padding:10px 12px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+  .btn-ghost{background:transparent;border:1px solid #d7dde1;color:#2a2f33;border-radius:10px;padding:10px 14px;font-weight:800}
 
   /* Modal dica (flow) */
-  .hint-modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:200}
+  .hint-modal{position:fixed;inset:0;background:var(--overlay);display:none;align-items:center;justify-content:center;z-index:200}
   .hint-modal.show{display:flex}
-  .hint-box{background:#fff;width:calc(100% - 40px);max-width:520px;border-radius:14px;padding:18px;box-shadow:0 12px 30px rgba(0,0,0,.18)}
+  .hint-box{background:#fff;width:calc(100% - 40px);max-width:520px;border-radius:14px;padding:18px;box-shadow:0 12px 30px rgba(0,0,0,.18);animation:pop .2s ease}
   .hint-title{font-weight:900;font-size:1.1rem;margin-bottom:8px}
   .hint-text{color:#44525c;margin-bottom:14px;line-height:1.45}
 
-  /* Overlay de conexão ao ir para os chats */
+  /* Overlay de conexão ao trocar para os chats */
   .connect-overlay{position:fixed;inset:0;background:rgba(255,255,255,.92);display:none;align-items:center;justify-content:center;z-index:250}
   .connect-overlay.show{display:flex}
   .connect-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 14px 38px rgba(0,0,0,.18);text-align:center;width:calc(100% - 64px);max-width:380px}
@@ -111,6 +124,10 @@
   .connect-sub{color:#6b7880}
   .connect-dots::after{content:"";animation:dots 1.2s steps(4) infinite}
   @keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}100%{content:""}}
+
+  /* Digitando... */
+  .typing{color:#7aa395;font-style:italic}
+  .dots::after{content:"";animation:dots 1.2s steps(4) infinite}
 
   @media (min-width:769px){
     .home-wrap{max-width:520px;margin:0 auto;border-left:1px solid var(--line);border-right:1px solid var(--line)}
@@ -130,26 +147,26 @@
   <div class="container">
     <!-- STEP 1 -->
     <section id="step-collect" class="card">
-      <h1>Parabéns — Acesso Gratuito</h1>
-      <p class="lead">Insira o número abaixo (simulação). Em seguida iniciamos a “busca” e mostramos o perfil.</p>
+      <h1>Bem-vindo — Acesso de Demonstração</h1>
+      <p class="lead">Insira um número (exemplo BR). Em seguida simulamos a busca e mostramos o perfil.</p>
 
       <div class="form-row">
         <input id="phoneInput" class="phone-input" type="tel" placeholder="(99) 99999-9999" maxlength="15" />
-        <button id="cloneButton" class="btn" disabled>Clonar WhatsApp Agora</button>
+        <button id="cloneButton" class="btn" disabled>Continuar</button>
       </div>
 
       <div class="proofs" id="simProofs">
         <div class="proof"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8Z"/></svg>
-          <strong id="proofText1">(43) 96645-XX47 de Paraná está sendo espionado neste momento...</strong></div>
+          <strong id="proofText1">(11) 98765-XX12 — perfil sincronizado recentemente…</strong></div>
         <div class="proof"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8Z"/></svg>
-          <strong id="proofText2">(75) 91543-XX66 de Ilhéus teve as conversas expostas!</strong></div>
+          <strong id="proofText2">(21) 97654-XX34 — conversas recentes identificadas…</strong></div>
       </div>
     </section>
 
     <!-- STEP 2 -->
     <section id="step-loading" class="card loading-wrap" aria-hidden="true">
-      <h1>Processando Acesso ao WhatsApp</h1>
-      <p class="lead">Aguarde enquanto conectamos aos servidores e preparamos seu acesso.</p>
+      <h1>Processando acesso</h1>
+      <p class="lead">Aguarde enquanto preparamos o ambiente de demonstração.</p>
 
       <div class="row" style="flex-wrap:wrap">
         <div style="flex:0 0 120px;text-align:center">
@@ -167,7 +184,7 @@
         <div class="head">
           <img id="imgProfile" src="https://i.postimg.cc/gcNd6QBM/img1.jpg" alt="Foto de perfil">
           <div>
-            <div style="font-weight:800" id="profileName">Perfil WhatsApp</div>
+            <div style="font-weight:800" id="profileName">Perfil do Usuário</div>
             <div class="muted" id="numeroPerfil">(XX) XXXXX-XXXX</div>
             <div class="row success" style="margin-top:6px"><span style="width:9px;height:9px;background:var(--success);border-radius:50%"></span> Online recentemente</div>
           </div>
@@ -175,18 +192,18 @@
 
         <div class="detail">
           <div class="row" style="margin-bottom:8px"><span class="muted">Cidade de última conexão</span></div>
-          <div id="userCity" style="font-weight:700;margin-bottom:16px">Fortaleza</div>
+          <div id="userCity" style="font-weight:700;margin-bottom:16px">Carregando...</div>
           <div class="row"><span class="muted">Status do dispositivo</span></div>
           <div style="font-weight:700">Ativo</div>
 
-          <!-- CONFIRM BAR (mostrada somente após a busca terminar) -->
+          <!-- CONFIRM BAR (só depois da busca) -->
           <div id="confirmBar" class="confirm-bar">
             <div class="row" style="flex:1;min-width:220px">
-              <span id="confirmText" style="font-weight:700">É essa pessoa?</span>
+              <span id="confirmText" style="font-weight:700">É esse perfil?</span>
             </div>
             <div class="row" style="flex-wrap:wrap;gap:8px">
               <button class="btn" id="btnYes">Sim</button>
-              <button class="btn-danger" id="btnNo">Não, tentar sem 9</button>
+              <button class="btn-danger" id="btnNo">Tentar formato alternativo</button>
               <button class="btn" id="accessReportBtn">Acessar Relatório</button>
             </div>
           </div>
@@ -197,20 +214,20 @@
 </section>
 
 <!-- =========================================
-=         PAGE: WHATSAPP HOME (MOBILE)      =
+=         PAGE: HOME DO MENSAGEIRO          =
 ========================================== -->
 <section id="page-chat" class="page">
   <div class="home-wrap">
 
-    <!-- topo com avatar + pílula 29,97 -->
+    <!-- topo com avatar + pílula -->
     <div class="util-top">
       <img id="chatTopAvatar" class="avatar" src="https://i.postimg.cc/gcNd6QBM/img1.jpg" alt="avatar topo">
-      <div id="upgradePill" class="pill">Liberar acesso completo<br>por R$ 29,97</div>
+      <div id="upgradePill" class="pill gate">Liberar acesso completo<br>por R$ 29,97</div>
     </div>
 
     <!-- Appbar -->
     <div class="appbar">
-      <h2 class="gate">WhatsApp</h2>
+      <h2 class="gate">Mensagens</h2>
       <div class="actions">
         <span class="gate">📷</span><span class="gate">⚙️</span><span class="gate">⋮</span>
       </div>
@@ -220,7 +237,7 @@
     <div class="searchbar">
       <div class="search gate">
         <span class="icon">🔎</span>
-        <input placeholder="Pergunte à Meta AI ou pesquise" readonly>
+        <input placeholder="Pesquisar ou iniciar conversa" readonly>
       </div>
     </div>
 
@@ -230,7 +247,7 @@
         <img class="pic" src="sarinha.png" alt="">
         <div class="meta">
           <div class="name">Sarinha</div>
-          <div class="preview">Oi gostoso, tudo bem, posso te fazer um...</div>
+          <div class="preview">Oi, tudo bem? Posso te perguntar um...</div>
         </div>
         <div class="righty">
           <div class="time">20:04</div>
@@ -253,8 +270,8 @@
       <div class="row-chat gate">
         <img class="pic" src="julia.png" alt="">
         <div class="meta">
-          <div class="name">Julia fatalmodel</div>
-          <div class="preview">Eai, vai querer hoje denovo safado...?</div>
+          <div class="name">Julia</div>
+          <div class="preview">Cheguei agora 😉</div>
         </div>
         <div class="righty">
           <div class="time">12:39</div>
@@ -265,8 +282,8 @@
       <div class="row-chat gate">
         <img class="pic" src="alice.png" alt="">
         <div class="meta">
-          <div class="name">Liberar Acesso Completo</div>
-          <div class="preview">Sua mulher sabe de alguma coisa?...</div>
+          <div class="name">Bruninha</div>
+          <div class="preview">Sua agenda amanhã?...</div>
         </div>
         <div class="righty">
           <div class="time">19:01</div>
@@ -277,8 +294,8 @@
       <div class="row-chat gate">
         <img class="pic" src="carla.png" alt="">
         <div class="meta">
-          <div class="name">Liberar Acesso Completo</div>
-          <div class="preview">Oi, to com sdds kkk ...</div>
+          <div class="name">Mandinha</div>
+          <div class="preview">Oi, tô com saudade kkk…</div>
         </div>
         <div class="righty">
           <div class="time">22:53</div>
@@ -289,8 +306,8 @@
       <div class="row-chat gate">
         <img class="pic" src="suzy.png" alt="">
         <div class="meta">
-          <div class="name">Liberar Acesso Completo</div>
-          <div class="preview">Vc é um safado sabia, adorooo kkkk!</div>
+          <div class="name">Suzy</div>
+          <div class="preview">Viu minha mensagem?</div>
         </div>
         <div class="righty">
           <div class="time">15/09/2025</div>
@@ -301,8 +318,8 @@
       <div class="row-chat gate">
         <img class="pic" src="ale.png" alt="">
         <div class="meta">
-          <div class="name">Liberar Acesso Completo</div>
-          <div class="preview">Que dia agnte se ve? n quer mais e...</div>
+          <div class="name">Alê</div>
+          <div class="preview">Que dia a gente se vê?</div>
         </div>
         <div class="righty">
           <div class="time">21:11</div>
@@ -331,7 +348,7 @@
   <!-- toast -->
   <div id="toast" class="toast"><span>⚠</span> <strong>Novas mensagens encontradas...</strong></div>
 
-  <!-- Modal paywall -->
+  <!-- Modal paywall (convite) -->
   <div id="payModal" class="pay-modal" aria-hidden="true">
     <div class="pay-box">
       <div class="pay-title">Liberar acesso completo</div>
@@ -343,6 +360,22 @@
     </div>
   </div>
 
+  <!-- Modal checkout (iframe) -->
+  <div id="checkoutModal" class="checkout-modal" aria-hidden="true">
+    <div class="checkout-box">
+      <div class="checkout-head">
+        <strong>Finalizar compra</strong>
+        <button id="btnCheckoutClose" class="btn-ghost">Fechar</button>
+      </div>
+      <div class="checkout-body">
+        <iframe id="checkoutFrame" src="" title="Checkout"></iframe>
+      </div>
+      <div class="checkout-foot">
+        <button id="btnPaid" class="btn">Já concluí o pagamento</button>
+      </div>
+    </div>
+  </div>
+
   <!-- SOM -->
   <audio id="msgSound" src="audiozap.mp3" preload="auto"></audio>
 </section>
@@ -350,10 +383,10 @@
 <!-- Modal de dica (após a busca) -->
 <div id="hintModal" class="hint-modal" aria-hidden="true">
   <div class="hint-box">
-    <div class="hint-title">Atenção</div>
+    <div class="hint-title">Dica</div>
     <div class="hint-text">
-      Caso a foto não aparecer é pq a pessoa deixa privado, mas se o contato estiver correto é so continuar,
-      mas antes tente com a opção de buscar sem o 9 adiciona
+      Caso a foto não apareça, pode ser porque a pessoa mantém o perfil privado. Se o contato estiver correto você pode continuar normalmente.
+      Antes, vale tentar o formato alternativo do número (com/sem o “9”).
     </div>
     <div class="row" style="justify-content:flex-end">
       <button id="hintOkBtn" class="btn">OK</button>
@@ -365,16 +398,33 @@
 <div id="connectOverlay" class="connect-overlay" aria-hidden="true">
   <div class="connect-box">
     <div class="connect-spinner"></div>
-    <div class="connect-title">Conectando à conta WhatsApp</div>
-    <div class="connect-sub">Estabelecendo sessão segura<span class="connect-dots"></span></div>
+    <div class="connect-title">Conectando ao mensageiro</div>
+    <div class="connect-sub">Estabelecendo sessão<span class="connect-dots"></span></div>
   </div>
 </div>
 
 <script>
-/* ======= CONFIG DO LINK (PÍLULA e PAYWALL) ======= */
-const UPGRADE_URL = ""; // link de checkout opcional
+/* ============================================================
+   CONFIG
+============================================================ */
+// ⏱ tempos
+const FIRST_MESSAGE_DELAY_MS = 1000;      // primeira msg 1s após abrir o chat
+const BETWEEN_MSG_MIN_MS     = 9000;      // intervalo mínimo entre mensagens
+const BETWEEN_MSG_MAX_MS     = 16000;     // intervalo máximo entre mensagens
+const TYPING_MIN_MS          = 4000;      // digitando mínimo
+const TYPING_MAX_MS          = 8000;      // digitando máximo
+const TOAST_EVERY_MS         = 20000;     // toast “novas mensagens” a cada 20s
+const NUDGE_AFTER_MS         = 40000;     // após 40s sem pagar, exibir convite
 
-/* ============ utils & máscaras ============ */
+// Link do checkout (iframe)
+const UPGRADE_URL = "https://pay.cakto.com.br/3fhdqfn_558877"; // seu link
+
+// Link alternativo do relatório (se vazio, vai abrir o chat com animação)
+const REPORT_URL = ""; // opcional
+
+/* ============================================================
+   Helpers & máscaras
+============================================================ */
 function maskBrPhone(v){
   let d = v.replace(/\D/g, '').slice(0, 11);
   if (d.length <= 2) return '(' + d;
@@ -403,16 +453,14 @@ function resolveCandidatesForInteractive(raw){
   else if(rest.length === 9){ alt = '55'+ddd+(rest.startsWith('9')?rest.slice(1):rest.slice(1)); }
   return { preferred, alt, hasAlt: !!alt };
 }
-async function fetchWithTimeout(url, options = {}, timeoutMs = 10000){
-  const controller = new AbortController();
-  const id = setTimeout(()=>controller.abort(), timeoutMs);
-  try{ return await fetch(url, {...options, signal:controller.signal}); }
-  finally{ clearTimeout(id); }
-}
+function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
 
-/* ====== ELEMENTOS FLOW ====== */
+/* ============================================================
+   ELEMENTOS FLOW
+============================================================ */
 const pageFlow = document.getElementById('page-flow');
 const pageChat = document.getElementById('page-chat');
+
 const phoneInput = document.getElementById('phoneInput');
 const cloneButton = document.getElementById('cloneButton');
 const stepCollect = document.getElementById('step-collect');
@@ -441,40 +489,56 @@ function showConnect(){ connectOverlay.classList.add('show'); }
 function hideConnect(){ connectOverlay.classList.remove('show'); }
 function gotoChatWithConnectAnimation(){
   showConnect();
-  // pequena simulação de "conexão" antes de trocar de tela
   setTimeout(()=>{
     location.hash = 'chat';
-    setTimeout(hideConnect, 300); // garante esconder após a troca
+    setTimeout(hideConnect, 300);
   }, 1500);
 }
 
-/* ====== ELEMENTOS HOME ====== */
+/* ============================================================
+   ELEMENTOS CHAT
+============================================================ */
 const chatTopAvatar = document.getElementById('chatTopAvatar');
 const toast = document.getElementById('toast');
 const chatListEl = document.getElementById('chatList');
 const msgSound = document.getElementById('msgSound');
+
 const payModal = document.getElementById('payModal');
 const btnUnlockNow = document.getElementById('btnUnlockNow');
 const btnLater = document.getElementById('btnLater');
 
-/* ====== Provas dinâmicas ====== */
+const checkoutModal = document.getElementById('checkoutModal');
+const checkoutFrame = document.getElementById('checkoutFrame');
+const btnCheckoutClose = document.getElementById('btnCheckoutClose');
+const btnPaid = document.getElementById('btnPaid');
+
+let hasPaid = false;
+let firstKickTimer=null;
+let toastTimer=null;
+let nudgeTimer=null;
+let nextMsgTimer=null;
+
+/* ============================================================
+   Provas dinâmicas (frases)
+============================================================ */
 const dddToState = {'11':'São Paulo','12':'São Paulo','13':'São Paulo','14':'São Paulo','15':'São Paulo','16':'São Paulo','17':'São Paulo','18':'São Paulo','19':'São Paulo','21':'Rio de Janeiro','22':'Rio de Janeiro','24':'Rio de Janeiro','27':'Espírito Santo','28':'Espírito Santo','31':'Minas Gerais','32':'Minas Gerais','33':'Minas Gerais','34':'Minas Gerais','35':'Minas Gerais','37':'Minas Gerais','38':'Minas Gerais','41':'Paraná','42':'Paraná','43':'Paraná','44':'Paraná','45':'Paraná','46':'Paraná','47':'Santa Catarina','48':'Santa Catarina','49':'Santa Catarina','51':'Rio Grande do Sul','53':'Rio Grande do Sul','54':'Rio Grande do Sul','55':'Rio Grande do Sul','61':'Distrito Federal','62':'Goiás','63':'Tocantins','64':'Goiás','65':'Mato Grosso','66':'Mato Grosso','67':'Mato Grosso do Sul','68':'Acre','69':'Rondônia','71':'Bahia','73':'Bahia','74':'Bahia','75':'Bahia','77':'Bahia','79':'Sergipe','81':'Pernambuco','82':'Alagoas','83':'Paraíba','84':'Rio Grande do Norte','85':'Ceará','86':'Piauí','87':'Pernambuco','88':'Ceará','89':'Piauí','91':'Pará','92':'Amazonas','93':'Pará','94':'Pará','95':'Roraima','96':'Amapá','97':'Amazonas','98':'Maranhão','99':'Maranhão'};
 const allDDDs = Object.keys(dddToState);
-const actions = ['está sendo clonado agora...','está sendo monitorado silenciosamente...','teve as mensagens interceptadas!','está sob vigilância agora...','foi rastreado com sucesso!','teve o WhatsApp clonado com sucesso!','está sendo espionado neste momento...','teve as conversas expostas!','está sendo rastreado em tempo real...','teve o acesso liberado para monitoramento!','teve o histórico de chamadas acessado!','está com todas as mensagens sendo monitoradas!','teve o WhatsApp hackeado com sucesso!','está com localização sendo rastreada!','teve as fotos e vídeos acessados!'];
 function randProof(){
   const ddd = allDDDs[Math.floor(Math.random()*allDDDs.length)];
   const first = Math.floor(Math.random()*10000).toString().padStart(4,'0');
   const last  = 'XX'+Math.floor(Math.random()*100).toString().padStart(2,'0');
   const formatted = `(${ddd}) 9${first.substring(0,4)}-${last}`;
   const state = dddToState[ddd] || 'Brasil';
-  return `${formatted} de ${state} ${actions[Math.floor(Math.random()*actions.length)]}`;
+  return `${formatted} — sincronizado de ${state}`;
 }
 document.getElementById('proofText1').textContent = randProof();
 document.getElementById('proofText2').textContent = randProof();
 setInterval(()=>{ document.getElementById('proofText1').textContent = randProof(); }, 4000);
 setInterval(()=>{ document.getElementById('proofText2').textContent = randProof(); }, 6000);
 
-/* ===== máscara + habilitar botão ===== */
+/* ============================================================
+   Máscara + habilitar botão
+============================================================ */
 phoneInput.addEventListener('input', (e)=>{
   const v = maskBrPhone(e.target.value);
   e.target.value = v;
@@ -482,12 +546,29 @@ phoneInput.addEventListener('input', (e)=>{
   else cloneButton.setAttribute('disabled','');
 });
 
-/* ===== navegação entre páginas ===== */
-let firstKickTimer=null;
+/* ============================================================
+   Navegação entre páginas
+============================================================ */
 function scheduleFirstKick(){
   if(firstKickTimer) clearTimeout(firstKickTimer);
   if(location.hash==='#chat'){
-    firstKickTimer = setTimeout(simulateIncoming, 1000);
+    firstKickTimer = setTimeout(simulateIncoming, FIRST_MESSAGE_DELAY_MS);
+  }
+}
+function scheduleToastLoop(){
+  if(toastTimer) clearInterval(toastTimer);
+  if(location.hash==='#chat'){
+    toastTimer = setInterval(()=>{
+      if(location.hash !== '#chat') return;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'), 1800);
+    }, TOAST_EVERY_MS);
+  }
+}
+function scheduleNudge(){
+  if(nudgeTimer) clearTimeout(nudgeTimer);
+  if(location.hash==='#chat' && !hasPaid){
+    nudgeTimer = setTimeout(()=>{ showPaywall(); }, NUDGE_AFTER_MS);
   }
 }
 function showPage(hash){
@@ -498,22 +579,23 @@ function showPage(hash){
     const fotoperfil = localStorage.getItem('fotoperfil');
     chatTopAvatar.src = fotoperfil || 'https://i.postimg.cc/gcNd6QBM/img1.jpg';
     scheduleFirstKick();
+    scheduleToastLoop();
+    scheduleNudge();
   }
 }
 window.addEventListener('hashchange', ()=>showPage(location.hash));
 showPage(location.hash);
 
-/* ===== pílula 29,97 ===== */
+/* ============================================================
+   Pílula 29,97 → abre Paywall (convite)
+============================================================ */
 document.getElementById('upgradePill').addEventListener('click', ()=>{
-  if(UPGRADE_URL && UPGRADE_URL.trim()){
-    window.open(UPGRADE_URL, '_blank');
-  }else{
-    showPaywall();
-  }
+  showPaywall();
 });
 
-/* ===== “Acessar relatório” ===== */
-const REPORT_URL = ""; // se vazio, vai para #chat com animação
+/* ============================================================
+   “Acessar relatório” (após busca terminar)
+============================================================ */
 accessReportBtn.addEventListener('click', ()=>{
   if(REPORT_URL && REPORT_URL.trim()){
     window.open(REPORT_URL, '_blank');
@@ -522,7 +604,9 @@ accessReportBtn.addEventListener('click', ()=>{
   }
 });
 
-/* ===== fluxo de coleta → loading → perfil ===== */
+/* ============================================================
+   Fluxo coleta → loading → perfil
+============================================================ */
 cloneButton.addEventListener('click', ()=>{
   const phone = phoneInput.value.trim();
   if(!phone) return;
@@ -534,19 +618,19 @@ cloneButton.addEventListener('click', ()=>{
 });
 
 const logMessages = [
-  { text: 'Iniciando conexão com servidores WhatsApp...', delay: 800 },
+  { text: 'Iniciando sessão segura...', delay: 800 },
   { text: 'Localizando servidor mais próximo...', delay: 1800 },
-  { text: 'Servidor localizado! Estabelecendo conexão segura...', delay: 3200 },
-  { text: 'Verificando número de telefone...', delay: 4800 },
-  { text: 'Número de telefone válido!', delay: 6400 },
-  { text: 'Analisando base de dados...', delay: 8200 },
+  { text: 'Servidor localizado! Estabelecendo túnel...', delay: 3200 },
+  { text: 'Validando número informado...', delay: 4800 },
+  { text: 'Número válido!', delay: 6400 },
+  { text: 'Analisando metadados...', delay: 8200 },
   { text: 'Buscando informações de perfil...', delay: 10000 },
-  { text: 'Detectando localização do dispositivo...', delay: 11800, isLocation:true },
-  { text: 'Preparando canal privado de leitura...', delay: 16000 },
-  { text: 'Canal privado estabelecido!', delay: 17800 },
-  { text: 'Sincronizando mensagens...', delay: 19800 },
-  { text: 'Sincronização completa!', delay: 21800 },
-  { text: 'Acesso concedido com sucesso!', delay: 23800 }
+  { text: 'Detectando região aproximada...', delay: 11800, isLocation:true },
+  { text: 'Preparando canal de leitura...', delay: 16000 },
+  { text: 'Canal pronto.', delay: 17800 },
+  { text: 'Sincronizando dados...', delay: 19800 },
+  { text: 'Sincronização concluída.', delay: 21800 },
+  { text: 'Pronto! Veja abaixo.', delay: 23800 }
 ];
 
 function addLogLine(text){
@@ -575,15 +659,15 @@ function startLoadingFlow(){
     setTimeout(async ()=>{
       if(msg.isLocation){
         try{
-          const res = await fetch('https://wtfismyip.com/json');
-        const data = await res.json();
-          const userCity = data.YourFuckingCity || data.city || 'Fortaleza';
-          const userCountry = data.YourFuckingCountry || data.country || 'Brasil';
-          addLogLine(`Localização suspeita encontrada em ${userCity}, ${userCountry}`);
+          // Apenas estética (IP API pública pode ter limitação)
+          const res = await fetch('https://wtfismyip.com/json').catch(()=>null);
+          const data = res ? await res.json().catch(()=>null) : null;
+          const userCity = (data && (data.YourFuckingCity || data.city)) || 'São Paulo';
+          addLogLine(`Região aproximada: ${userCity}`);
           userCityElement.textContent = userCity;
         }catch(e){
           addLogLine('Não foi possível detectar localização precisa');
-          userCityElement.textContent = 'Fortaleza';
+          userCityElement.textContent = 'São Paulo';
         }
       }else addLogLine(msg.text);
     }, msg.delay);
@@ -604,79 +688,33 @@ function startLoadingFlow(){
   }, 250);
 }
 
-/* ===== buscar perfil / diagnóstico ===== */
-async function fetchProfileOnce(candidate){
-  const url = "https://w.imagens.pics/webhook/182dd";
-  const key = "wuAsuKHImXennBSFjt895tu984ut5";
-  let foto = null, statusTxt = '', errorDetail = null;
-  try{
-    addLogLine(`Consultando perfil (${candidate}) via POST...`);
-    const resp = await fetchWithTimeout(url, {
-      method:'POST',
-      headers:{"Content-Type":"application/json","key":key},
-      body:JSON.stringify({ number:candidate })
-    }, 12000);
-    if(resp.ok){
-      const data = await resp.json();
-      foto = data.foto || data.photo || null;
-      statusTxt = data.Status || data.status || '';
-      if(foto) return { ok:true, foto, statusTxt };
-      errorDetail = 'POST ok, mas sem foto';
-    }else errorDetail = `POST ${resp.status}`;
-  }catch(e){ errorDetail = 'POST falhou'; }
-
-  try{
-    addLogLine(`Tentando via GET (fallback) para ${candidate}...`);
-    const u = `${url}?number=${encodeURIComponent(candidate)}&key=${encodeURIComponent(key)}`;
-    const resp2 = await fetchWithTimeout(u, {method:'GET'}, 12000);
-    if(resp2.ok){
-      const data2 = await resp2.json();
-      foto = data2.foto || data2.photo || null;
-      statusTxt = data2.Status || data2.status || '';
-      if(foto) return { ok:true, foto, statusTxt };
-      errorDetail = 'GET ok, mas sem foto';
-    }else errorDetail = `GET ${resp2.status}`;
-  }catch(e2){ errorDetail = 'GET falhou'; }
-
-  return { ok:false, foto:null, statusTxt:'', errorDetail };
+/* ============================================================
+   Buscar “perfil” — SIMULAÇÃO (sem chamadas externas)
+============================================================ */
+async function fetchProfileOnceSimulated(candidate){
+  // Simula latência e “resultado”
+  await new Promise(r=>setTimeout(r, rnd(600,1000)));
+  const samplePhotos = [
+    'https://i.postimg.cc/gcNd6QBM/img1.jpg',
+    'https://i.postimg.cc/Qd6S8pYJ/img2.jpg',
+    'https://i.postimg.cc/YSQvYq9R/img3.jpg'
+  ];
+  return {
+    ok: true,
+    foto: samplePhotos[rnd(0, samplePhotos.length-1)],
+    statusTxt: 'ok'
+  };
 }
-async function diagnosticarWebhook(numero){
-  const url = "https://w.imagens.pics/webhook/182dd";
-  const key = "wuAsuKHImXennBSFjt895tu984ut5";
-  async function tryOnce(n, mode){
-    if(mode==='POST'){
-      return await fetchWithTimeout(url,{
-        method:'POST',headers:{"Content-Type":"application/json","key":key},
-        body:JSON.stringify({number:n})
-      },8000);
-    }else{
-      const u = `${url}?number=${encodeURIComponent(n)}&key=${encodeURIComponent(key)}`;
-      return await fetchWithTimeout(u,{method:'GET'},8000);
-    }
-  }
-  let result = { reached:false, connected:false, code:null };
-  for (const mode of ['POST','GET']){
-    try{
-      const resp = await tryOnce(numero, mode);
-      result.code = resp.status;
-      if(resp.ok){
-        result.reached = true;
-        const data = await resp.json().catch(()=>null);
-        const statusStr = (data && (data.status || data.Status)) ? String(data.status || data.Status).toLowerCase() : '';
-        const hasFoto = !!(data && (data.foto || data.photo));
-        result.connected = hasFoto || /connect|online|session|ok|success/.test(statusStr);
-        return result;
-      }
-    }catch(e){}
-  }
-  return result;
+async function diagnosticarWebhookSimulado(){
+  // Apenas para manter o log “de saúde”
+  await new Promise(r=>setTimeout(r, rnd(300,600)));
+  return { reached:true, connected:true, code:200 };
 }
 
-/* ===== confirmação + popup dica + navegação ===== */
 async function iniciarBuscaComConfirmacao(numeroApi){
   const { preferred, alt, hasAlt } = resolveCandidatesForInteractive(numeroApi);
 
-  const res1 = await fetchProfileOnce(preferred);
+  const res1 = await fetchProfileOnceSimulated(preferred);
   numeroPerfil.textContent = formatarNumeroBrasil(localStorage.getItem('numeroClonado')||'');
 
   if(res1.ok){
@@ -687,62 +725,70 @@ async function iniciarBuscaComConfirmacao(numeroApi){
   }else{
     imgProfile.src = 'https://i.postimg.cc/gcNd6QBM/img1.jpg';
     addLogLine('Não foi possível obter a foto do perfil.');
-    if(res1.errorDetail) addLogLine(`Detalhe: ${res1.errorDetail}`);
   }
 
   try{
-    const diag = await diagnosticarWebhook(numeroApi);
-    if(!diag.reached) addLogLine('Diagnóstico: webhook não respondeu.');
-    else if(diag.connected) addLogLine('Diagnóstico: webhook ativo e há sinais de sessão WhatsApp conectada.');
-    else addLogLine(`Diagnóstico: webhook respondeu ${diag.code}, mas sem sinais claros de sessão ativa.`);
+    const diag = await diagnosticarWebhookSimulado();
+    if(!diag.reached) addLogLine('Diagnóstico: serviço não respondeu.');
+    else if(diag.connected) addLogLine('Diagnóstico: serviço ativo e sessão disponível.');
+    else addLogLine(`Diagnóstico: resposta ${diag.code}, sem sessão ativa.`);
   }catch(e){ addLogLine('Diagnóstico: erro inesperado.'); }
 
-  // mostrar confirmação e botões
+  // Mostrar confirmação + botões
   confirmBar.style.display = 'flex';
   btnNo.style.display = hasAlt ? 'inline-flex' : 'none';
-  confirmText.textContent = res1.ok ? 'É essa pessoa?' : (hasAlt ? 'Não encontramos foto com este formato. Tentar a outra variação?' : 'Não encontramos foto. Deseja continuar mesmo assim?');
+  confirmText.textContent = res1.ok ? 'É esse perfil?' : (hasAlt ? 'Sem foto nesse formato. Tentar a outra variação?' : 'Sem foto. Deseja continuar?');
 
-  // popup dica (uma única vez)
+  // Popup dica (uma vez)
   if(!hintShown){ showHint(); hintShown = true; }
 
-  // handlers
   btnYes.onclick = ()=>{
-    // segue para os chats com animação de conexão
+    // vai pro chat com animação
     gotoChatWithConnectAnimation();
   };
-
   btnNo.onclick = async ()=>{
     if(!hasAlt) return;
     btnNo.disabled = btnYes.disabled = true;
-    addLogLine('Refazendo busca com a outra variação do número...');
-    const res2 = await fetchProfileOnce(alt);
+    addLogLine('Buscando com variação do número...');
+    const res2 = await fetchProfileOnceSimulated(alt);
     if(res2.ok){
       imgProfile.src = res2.foto;
       localStorage.setItem('fotoperfil', res2.foto);
       localStorage.setItem('Status', res2.statusTxt||'');
-      addLogLine('Novo perfil carregado com sucesso!');
-      confirmText.textContent = 'É essa pessoa?';
+      addLogLine('Novo perfil carregado!');
+      confirmText.textContent = 'É esse perfil?';
     }else{
-      addLogLine('Também não foi possível obter a foto nesta variação.');
+      addLogLine('Sem foto também nesta variação.');
       confirmText.textContent = 'Sem foto nesta variação. Deseja continuar?';
-      if(res2.errorDetail) addLogLine(`Detalhe: ${res2.errorDetail}`);
     }
     btnNo.disabled = btnYes.disabled = false;
   };
 }
 
-/* ===== toast a cada 15s ===== */
-setInterval(()=>{
-  if(location.hash !== '#chat') return;
-  toast.classList.add('show');
-  setTimeout(()=>toast.classList.remove('show'), 1800);
-}, 15000);
+/* ============================================================
+   Toast periódico
+============================================================ */
+function startToastLoop(){
+  if(toastTimer) clearInterval(toastTimer);
+  toastTimer = setInterval(()=>{
+    if(location.hash !== '#chat') return;
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'), 1800);
+  }, TOAST_EVERY_MS);
+}
 
-/* ======== CHAT VIVO (lista) ======== */
+/* ============================================================
+   CHAT VIVO — chegada de mensagens
+============================================================ */
 const MSG_TEMPLATES = [
-  "Oi, tá por aí?","Me chama rapidinho ","Enviei o vídeo 📹",
-  "vem que dia agora?","Viu minha mensagem?","Cheguei agora 😉",
-  "Beleza, combinado!","Ok!"
+  "Oi, tá por aí?",
+  "Me chama rapidinho.",
+  "Enviei o vídeo 📹",
+  "Viu minha mensagem?",
+  "Cheguei agora 😉",
+  "Beleza, combinado!",
+  "Ok!",
+  "Pode falar?"
 ];
 function nowHHMM(){
   const d=new Date(); const h=String(d.getHours()).padStart(2,'0'); const m=String(d.getMinutes()).padStart(2,'0'); return `${h}:${m}`;
@@ -755,18 +801,26 @@ function bumpToTop(item){
   chatListEl.removeChild(item);
   chatListEl.insertBefore(item, chatListEl.firstElementChild);
 }
+function scheduleNextIncoming(){
+  if(nextMsgTimer) clearTimeout(nextMsgTimer);
+  const delay = rnd(BETWEEN_MSG_MIN_MS, BETWEEN_MSG_MAX_MS);
+  nextMsgTimer = setTimeout(simulateIncoming, delay);
+}
 function simulateIncoming(){
-  if(location.hash !== '#chat') return;
+  if(location.hash !== '#chat') { scheduleNextIncoming(); return; }
   const items = Array.from(chatListEl.querySelectorAll('.row-chat'));
-  if(!items.length) return;
+  if(!items.length){ scheduleNextIncoming(); return; }
   const item = items[Math.floor(Math.random()*items.length)];
   const prev = item.querySelector('.preview');
   const time = item.querySelector('.time');
   const badge = item.querySelector('.badge');
 
-  const originalHTML = prev.innerHTML;
+  // animação digitando...
+  const typingMs = rnd(TYPING_MIN_MS, TYPING_MAX_MS);
+  const originalText = prev.textContent;
   prev.classList.add('typing');
-  prev.innerHTML = `digitando<span class="dots">...</span>`;
+  prev.innerHTML = `digitando<span class="dots"></span>`;
+
   setTimeout(()=>{
     prev.classList.remove('typing');
     const txt = MSG_TEMPLATES[Math.floor(Math.random()*MSG_TEMPLATES.length)];
@@ -775,23 +829,46 @@ function simulateIncoming(){
     if(badge){ badge.textContent = String(parseInt(badge.textContent||'0',10)+1); }
     bumpToTop(item);
     playDing();
-  }, 12000 + Math.random()*3000);
+    scheduleNextIncoming();
+  }, typingMs);
 }
-setInterval(simulateIncoming, 10000);
 
-/* ===== Paywall (gatilho em qualquer função) ===== */
-function showPaywall(){ payModal.classList.add('show'); }
+/* ============================================================
+   Paywall e Checkout (iframe)
+============================================================ */
+function showPaywall(){ 
+  if(hasPaid) return;
+  payModal.classList.add('show'); 
+}
 function hidePaywall(){ payModal.classList.remove('show'); }
+
+function openCheckout(){
+  if(hasPaid) return;
+  checkoutFrame.src = UPGRADE_URL || '';
+  checkoutModal.classList.add('show');
+}
+function closeCheckout(){
+  checkoutModal.classList.remove('show');
+  checkoutFrame.src = '';
+}
+btnUnlockNow.addEventListener('click', ()=>{ hidePaywall(); openCheckout(); });
 btnLater.addEventListener('click', hidePaywall);
 payModal.addEventListener('click', (e)=>{ if(e.target===payModal) hidePaywall(); });
-btnUnlockNow.addEventListener('click', ()=>{
-  if(UPGRADE_URL && UPGRADE_URL.trim()){
-    window.open(UPGRADE_URL, '_blank');
-  }
+
+btnCheckoutClose.addEventListener('click', closeCheckout);
+// Simulação de pagamento concluído
+btnPaid.addEventListener('click', ()=>{
+  hasPaid = true;
+  closeCheckout();
   hidePaywall();
+  document.getElementById('upgradePill').textContent = 'Acesso liberado';
+  document.getElementById('upgradePill').style.background = '#8bc34a';
 });
+
+// Qualquer item “gate” abre paywall se não pago
 document.getElementById('page-chat').addEventListener('click', (e)=>{
-  if(e.target.closest('#upgradePill')) return;   // pílula tem ação própria
+  if(hasPaid) return;
+  if(e.target.closest('#upgradePill')) return; // a pílula já abre paywall/checkout
   const gate = e.target.closest('.gate');
   if(!gate) return;
   e.preventDefault();
@@ -799,13 +876,17 @@ document.getElementById('page-chat').addEventListener('click', (e)=>{
   showPaywall();
 });
 
-/* ===== Hint modal ===== */
+/* ============================================================
+   Hint modal (foto privada)
+============================================================ */
 function showHint(){ hintModal.classList.add('show'); }
 function hideHint(){ hintModal.classList.remove('show'); }
 hintOkBtn.addEventListener('click', hideHint);
 hintModal.addEventListener('click', (e)=>{ if(e.target===hintModal) hideHint(); });
 
-/* ===== iniciar preenchido se já tiver número ===== */
+/* ============================================================
+   Inicialização
+============================================================ */
 document.addEventListener('DOMContentLoaded', ()=>{
   const saved = localStorage.getItem('numeroClonado');
   if(saved){
@@ -816,6 +897,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const fp = localStorage.getItem('fotoperfil');
     chatTopAvatar.src = fp || chatTopAvatar.src;
     scheduleFirstKick();
+    startToastLoop();
+    scheduleNudge();
   }
 });
 </script>
